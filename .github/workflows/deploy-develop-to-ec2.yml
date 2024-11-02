@@ -1,0 +1,25 @@
+name: Build and Deploy to Development
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: ["develop"]
+
+jobs:
+  build:
+    runs-on: ["self-hosted", "develop"]  # Use the self-hosted runner with label 'develop'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.11.0'  # Specify Node.js version
+
+      - name: Install dependencies with npm ci
+        run: npm ci  # Uses npm ci for faster and more reliable builds
+
+      - name: Build the application
+        run: npm run build  # Create the build
