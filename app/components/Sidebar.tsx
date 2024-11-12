@@ -1,70 +1,42 @@
 // components/Sidebar.tsx
 import React from 'react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Home, Book, User, HelpCircle, Settings, LogOut, FileText, Upload } from 'lucide-react';
 
 export default function Sidebar() {
   return (
-    <div className="w-16 lg:w-48 h-full bg-gray-800 text-white p-4 flex flex-col items-center lg:items-start space-y-6" style={{ boxSizing: 'content-box' }}>
+    <div className="w-20 lg:w-60 h-screen bg-gradient-to-br from-gray-800 to-gray-900 text-white flex flex-col items-center lg:items-start p-4">
       {/* Logo */}
-      <div className="text-2xl font-bold mb-8 lg:ml-2">iLIM</div>
+      <div className="text-2xl font-extrabold mb-10 lg:ml-2 text-center lg:text-left text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+        iLIM
+      </div>
 
       {/* Navigation */}
-      <nav className="flex flex-col space-y-6 w-full" style={{ boxSizing: 'content-box' }}>
-        <Link href="/course-details">
-          <button className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded w-full" style={{ boxSizing: 'content-box' }}>
-            <span className="text-xl">🏠</span>
-            <span className="hidden lg:inline lg:ml-2">Home</span>
-          </button>
-        </Link>
-        <Link href="/purchased-courses">
-          <button className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded w-full" style={{ boxSizing: 'content-box' }}>
-            <span className="text-xl">📚</span>
-            <span className="hidden lg:inline lg:ml-2">Dashboard</span>
-          </button>
-        </Link>
-        <Link href="/profile">
-          <button className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded w-full" style={{ boxSizing: 'content-box' }}>
-            <span className="text-xl">👤</span>
-            <span className="hidden lg:inline lg:ml-2">Profile</span>
-          </button>
-        </Link>
-        <Link href="/admin">
-          <button className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded w-full">
-            <span className="text-xl">🛡️</span> {/* Admin Icon */}
-            <span className="hidden lg:inline lg:ml-2">Admin</span>
-          </button>
-        </Link>
-        <Link href="/support">
-          <button className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded w-full" style={{ boxSizing: 'content-box' }}>
-            <span className="text-xl">❓</span>
-            <span className="hidden lg:inline lg:ml-2">Support</span>
-          </button>
-        </Link>
-        <Link href="/about">
-          <button className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded w-full" style={{ boxSizing: 'content-box' }}>
-            <span className="text-xl">📝</span>
-            <span className="hidden lg:inline lg:ml-2">About</span>
-          </button>
-        </Link>
-        <Link href="/settings">
-          <button className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded w-full" style={{ boxSizing: 'content-box' }}>
-            <span className="text-xl">⚙️</span>
-            <span className="hidden lg:inline lg:ml-2">Settings</span>
-          </button>
-        </Link>
-        <Link href="/upload-course">
-          <button className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded w-full" style={{ boxSizing: 'content-box' }}>
-            <span className="text-xl">🗂️</span>
-            <span className="hidden lg:inline lg:ml-2">Manage Courses</span>
-          </button>
-        </Link>
-        <Link href="/">
-          <button className="flex items-center space-x-2 hover:bg-gray-700 p-2 rounded w-full" style={{ boxSizing: 'content-box' }}>
-            <span className="text-xl">🚪</span>
-            <span className="hidden lg:inline lg:ml-2">Logout</span>
-          </button>
-        </Link>
+      <nav className="space-y-3 lg:w-full w-20 flex flex-col items-center lg:items-start">
+        <NavItem href="/course-details" label="Home" icon={<Home className="w-5 h-5 lg:w-6 lg:h-6" />} />
+        <NavItem href="/purchased-courses" label="Dashboard" icon={<Book className="w-5 h-5 lg:w-6 lg:h-6" />} />
+        <NavItem href="/profile" label="Profile" icon={<User className="w-5 h-5 lg:w-6 lg:h-6" />} />
+        <NavItem href="/admin" label="Admin" icon={<FileText className="w-5 h-5 lg:w-6 lg:h-6" />} />
+        <NavItem href="/support" label="Support" icon={<HelpCircle className="w-5 h-5 lg:w-6 lg:h-6" />} />
+        <NavItem href="/about" label="About" icon={<FileText className="w-5 h-5 lg:w-6 lg:h-6" />} />
+        <NavItem href="/settings" label="Settings" icon={<Settings className="w-5 h-5 lg:w-6 lg:h-6" />} />
+        <NavItem href="/upload-course" label="Manage Courses" icon={<Upload className="w-5 h-5 lg:w-6 lg:h-6" />} />
+        <NavItem href="/" label="Logout" icon={<LogOut className="w-5 h-5 lg:w-6 lg:h-6" />} />
       </nav>
     </div>
   );
 }
+
+// Individual Nav Item Component
+const NavItem = ({ href, label, icon }) => (
+  <Link href={href}>
+    <Button
+      variant="ghost"
+      className="flex items-center space-x-2 text-white w-full justify-center lg:justify-start lg:px-4 py-3 rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-500"
+    >
+      {icon}
+      <span className="hidden lg:inline lg:ml-3 text-sm font-semibold">{label}</span>
+    </Button>
+  </Link>
+);

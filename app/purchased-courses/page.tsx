@@ -13,12 +13,14 @@ export default function PurchasedCoursesPage() {
   ];
 
   return (
-    <div className="flex h-screen">
-      {/* Sidebar */}
-      <Sidebar />
+    <div className="flex">
+      {/* Sidebar with fixed position */}
+      <div className="fixed top-0 left-0 h-full w-16 lg:w-48 bg-gray-800 text-white">
+        <Sidebar />
+      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 p-6 bg-gray-100">
+      {/* Main Content with adjusted padding */}
+      <div className="flex-1 ml-16 lg:ml-48 p-6 bg-gray-100 overflow-y-auto h-screen">
         <h1 className="text-3xl font-bold mb-4">Purchased Courses</h1>
         <p className="text-lg mb-8">Welcome Back!</p>
 

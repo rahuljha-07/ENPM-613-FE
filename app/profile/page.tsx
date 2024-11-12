@@ -1,108 +1,122 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ProfilePage() {
-  const [editing, setEditing] = useState(false);
-  const [userData, setUserData] = useState({
+  const [profileData, setProfileData] = useState({
     name: "John Doe",
     email: "johndoe@example.com",
-    bio: "Web Developer, Designer, and Tech Enthusiast.",
+    bio: "Passionate learner and software developer with a love for technology and innovation.",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setUserData((prevData) => ({
+  const [editing, setEditing] = useState(false);
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setProfileData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [id]: value,
     }));
   };
 
-  const handleEditToggle = () => {
-    setEditing(!editing);
+  const handleSave = () => {
+    setEditing(false);
+    toast.success("Profile updated successfully!");
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-100 p-6">
-      <div className="w-full max-w-2xl bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-3xl font-bold mb-6 text-center">Profile</h1>
-
-        {/* Profile Picture */}
-        <div className="flex justify-center mb-6">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
+      
+      <div className="bg-white text-gray-800 rounded-lg shadow-lg p-8 w-full max-w-lg space-y-6">
+        <h1 className="text-3xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500">
+          Profile
+        </h1>
+        
+        <div className="text-center mb-6">
           <img
-            src="https://via.placeholder.com/100" // Placeholder image
+            src="https://via.placeholder.com/100"
             alt="Profile"
-            className="w-24 h-24 rounded-full border-2 border-gray-300"
+            className="w-24 h-24 rounded-full mx-auto shadow-md mb-4"
           />
+          <p className="text-gray-600 text-sm">Welcome back, {profileData.name}</p>
         </div>
 
-        {/* Profile Details */}
         <div className="space-y-4">
           {/* Name */}
           <div>
-            <label className="block text-gray-700 font-semibold">Name</label>
+            <label htmlFor="name" className="block text-sm font-semibold text-gray-700">
+              Name
+            </label>
             {editing ? (
-              <input
+              <Input
                 type="text"
-                name="name"
-                value={userData.name}
+                id="name"
+                value={profileData.name}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                className="mt-1 w-full"
               />
             ) : (
-              <p className="text-gray-700">{userData.name}</p>
+              <p className="mt-1 text-gray-800">{profileData.name}</p>
             )}
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-gray-700 font-semibold">Email</label>
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-700">
+              Email
+            </label>
             {editing ? (
-              <input
+              <Input
                 type="email"
-                name="email"
-                value={userData.email}
+                id="email"
+                value={profileData.email}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                className="mt-1 w-full"
               />
             ) : (
-              <p className="text-gray-700">{userData.email}</p>
+              <p className="mt-1 text-gray-800">{profileData.email}</p>
             )}
           </div>
 
           {/* Bio */}
           <div>
-            <label className="block text-gray-700 font-semibold">Bio</label>
+            <label htmlFor="bio" className="block text-sm font-semibold text-gray-700">
+              Bio
+            </label>
             {editing ? (
-              <textarea
-                name="bio"
-                value={userData.bio}
+              <Textarea
+                id="bio"
+                value={profileData.bio}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-              ></textarea>
+                className="mt-1 w-full"
+              />
             ) : (
-              <p className="text-gray-700">{userData.bio}</p>
+              <p className="mt-1 text-gray-800">{profileData.bio}</p>
             )}
           </div>
         </div>
 
-        {/* Buttons */}
-        <div className="flex justify-center mt-6 space-x-4">
-          <button
-            onClick={handleEditToggle}
-            className={`px-4 py-2 rounded-lg ${
-              editing ? "bg-green-500 text-white" : "bg-blue-500 text-white"
-            } transition duration-200 hover:bg-opacity-80`}
-          >
-            {editing ? "Save Changes" : "Edit Profile"}
-          </button>
-          {editing && (
-            <button
-              onClick={() => setEditing(false)}
-              className="px-4 py-2 rounded-lg bg-gray-400 text-white transition duration-200 hover:bg-gray-500"
-            >
-              Cancel
-            </button>
+        {/* Action Buttons */}
+        <div className="flex justify-center space-x-4 mt-6">
+          {editing ? (
+            <>
+              <Button variant="outline" onClick={() => setEditing(false)} className="bg-gray-500 hover:bg-gray-600 text-white">
+                Cancel
+              </Button>
+              <Button onClick={handleSave} className="bg-green-500 hover:bg-green-600 text-white">
+                Save
+              </Button>
+            </>
+          ) : (
+            <Button onClick={() => setEditing(true)} className="bg-blue-500 hover:bg-blue-600 text-white w-full">
+              Edit Profile
+            </Button>
           )}
         </div>
       </div>

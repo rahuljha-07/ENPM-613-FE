@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '../components/Sidebar';
 import { Button } from '@/components/ui/button';
 import { ToastContainer, toast } from 'react-toastify';
-import dummyCourses from './dummyCourses.json'; // Import the dummy JSON data
+import dummyCourses from './dummyCourses.json';
 import 'react-toastify/dist/ReactToastify.css';
 
 const PUBLISHED_COURSES = `${process.env.NEXT_PUBLIC_ILIM_BE}/course-details`;
@@ -67,85 +67,75 @@ export default function CourseDetailsPage() {
     <div className="flex h-screen">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
       
-      <Sidebar />
+      {/* Sidebar */}
+      <div className="fixed h-full">
+        <Sidebar />
+      </div>
 
-      <div className="flex-1 p-6 ml-12 overflow-y-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-4">Available Courses</h1>
-          <div className="flex items-center mb-6">
-            <input
-              type="text"
-              placeholder="Search Courses"
-              className="flex-1 px-4 py-2 border rounded-lg border-gray-300 focus:outline-none"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+      {/* Main Content */}
+      <div className="flex-1 p-6 pl-20 lg:pl-56 ml-16 overflow-y-auto">
+        <div className="mb-8 text-center">
+          <h1 className="text-4xl font-extrabold text-gray-800 mb-2 tracking-tight">
+            <span className="bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
+              📚 Available Courses
+            </span>
+          </h1>
+          <p className="text-lg text-gray-600">Explore and choose a course to begin your learning journey!</p>
+        </div>
+        
+        {/* Search Bar */}
+        <div className="mb-6 flex items-center justify-center">
+          <input
+            type="text"
+            placeholder="Search Courses"
+            className="w-full max-w-lg px-4 py-2 border rounded-lg border-gray-300 focus:outline-none"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
 
+        {/* Courses List */}
         {loading ? (
           <div className="flex items-center justify-center w-full h-64">
-            <div style={loaderStyle}></div>
+            <div className="loader border-t-4 border-blue-500 rounded-full w-12 h-12 animate-spin"></div>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {filteredCourses.length > 0 ? (
               filteredCourses.map((course) => (
-                <div key={course.id} className="flex border rounded-lg p-4 items-start bg-white shadow">
+                <div key={course.id} className="bg-white border rounded-lg p-4 items-start shadow hover:shadow-md transition-shadow duration-300">
                   <img
                     src={course.thumbnailUrl || DEFAULT_THUMBNAIL_URL}
                     alt={course.title}
-                    className="w-24 h-24 bg-gray-200 flex-shrink-0 rounded mr-4 object-cover"
+                    className="w-full h-40 object-cover rounded mb-4"
                     loading="lazy"
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = DEFAULT_THUMBNAIL_URL;
                     }}
                   />
-                  <div className="flex-1">
+                  <div>
                     <h2 className="text-xl font-semibold">{course.title}</h2>
-                    <p className="text-gray-600 text-sm mt-2">
+                    <p className="text-gray-600 text-sm mt-2 mb-4">
                       {course.description}
                     </p>
-                    <div className="flex items-center space-x-4 text-sm text-gray-500 mt-2">
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <span>{course.modules.length} Modules</span>
                       <span>💲 {course.price}</span>
                       <span>Status: {course.status}</span>
                     </div>
                   </div>
-                  <Button variant="outline" className="ml-4" onClick={() => handleBuyClick(course)}>
+                  <Button variant="outline" className="mt-4 w-full" onClick={() => handleBuyClick(course)}>
                     Buy
                   </Button>
                 </div>
               ))
             ) : (
-              <p className="text-center text-gray-500">No courses available.</p>
+              <p className="text-center text-gray-500 col-span-full">No courses available.</p>
             )}
           </div>
         )}
       </div>
     </div>
   );
-}
-
-// Inline loader style
-const loaderStyle = {
-  border: '4px solid #f3f3f3',
-  borderTop: '4px solid #3498db',
-  borderRadius: '50%',
-  width: '40px',
-  height: '40px',
-  animation: 'spin 1s linear infinite',
-};
-
-// Adding keyframes for the spinner animation
-if (typeof window !== 'undefined') {
-  const styleElement = document.createElement('style');
-  styleElement.textContent = `
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  `;
-  document.head.appendChild(styleElement);
 }
