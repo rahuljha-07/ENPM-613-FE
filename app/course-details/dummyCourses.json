@@ -1,0 +1,1453 @@
+[
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-1",
+      "title": "Introduction to Python Programming",
+      "thumbnailUrl": "https://www.shutterstock.com/shutterstock/photos/2506815585/display_1500/stock-photo-stage-lights-light-beams-from-the-stage-spotlights-on-the-stage-at-the-time-of-the-entertainment-2506815585.jpg",
+      "description": "Learn the basics of Python programming, including syntax, data structures, and best practices.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 15,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-1-1",
+          "title": "Getting Started with Python",
+          "description": "Introduction to Python and setting up your development environment.",
+          "orderIndex": 0,
+          "courseId": "course-1"
+        },
+        {
+          "id": "module-1-2",
+          "title": "Python Data Structures",
+          "description": "Understanding lists, tuples, dictionaries, and sets in Python.",
+          "orderIndex": 1,
+          "courseId": "course-1"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-1"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-2",
+      "title": "Web Development with JavaScript",
+      "thumbnailUrl": "https://www.shutterstock.com/shutterstock/photos/2521362139/display_1500/stock-photo-diwali-indian-festival-diwali-fireworks-with-diwali-lights-2521362139.jpg",
+      "description": "Build dynamic and interactive websites using JavaScript, HTML, and CSS.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 25,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-2-1",
+          "title": "JavaScript Fundamentals",
+          "description": "Learn the basics of JavaScript, including variables, functions, and events.",
+          "orderIndex": 0,
+          "courseId": "course-2"
+        },
+        {
+          "id": "module-2-2",
+          "title": "DOM Manipulation",
+          "description": "Interact with and modify the Document Object Model using JavaScript.",
+          "orderIndex": 1,
+          "courseId": "course-2"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-2"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-3",
+      "title": "Data Analysis with Excel",
+      "thumbnailUrl": "https://www.shutterstock.com/shutterstock/photos/2527172127/display_1500/stock-photo-purple-and-green-northern-lights-over-basalt-stack-hvitserkur-on-the-vatnsnes-peninsula-iceland-2527172127.jpg",
+      "description": "Master data analysis techniques using Microsoft Excel, including pivot tables and charts.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 20,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-3-1",
+          "title": "Excel Basics",
+          "description": "Introduction to Excel interface, formulas, and basic functions.",
+          "orderIndex": 0,
+          "courseId": "course-3"
+        },
+        {
+          "id": "module-3-2",
+          "title": "Advanced Data Analysis",
+          "description": "Using pivot tables, advanced formulas, and data visualization techniques.",
+          "orderIndex": 1,
+          "courseId": "course-3"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-3"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-4",
+      "title": "Digital Marketing Strategies",
+      "thumbnailUrl": "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.istockphoto.com%2Fphotos%2Fbeauty-in-nature&psig=AOvVaw1w8JnOHGv-BgZ6_kApIVHF&ust=1731474169402000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKjgtuaC1okDFQAAAAAdAAAAABAE",
+      "description": "Develop effective digital marketing strategies to enhance your online presence.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 30,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-4-1",
+          "title": "SEO Fundamentals",
+          "description": "Learn the basics of Search Engine Optimization to improve website ranking.",
+          "orderIndex": 0,
+          "courseId": "course-4"
+        },
+        {
+          "id": "module-4-2",
+          "title": "Social Media Marketing",
+          "description": "Strategies for leveraging social media platforms to reach your audience.",
+          "orderIndex": 1,
+          "courseId": "course-4"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-4"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-5",
+      "title": "Graphic Design Essentials",
+      "thumbnailUrl": "https://www.shutterstock.com/shutterstock/photos/2527158121/display_1500/stock-photo-famous-stokksnes-mountains-on-vestrahorn-cape-in-iceland-under-incredible-sky-with-northern-lights-2527158121.jpg",
+      "description": "Learn the fundamental principles of graphic design using industry-standard tools.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 35,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-5-1",
+          "title": "Design Principles",
+          "description": "Understand the core principles of design, including balance, contrast, and alignment.",
+          "orderIndex": 0,
+          "courseId": "course-5"
+        },
+        {
+          "id": "module-5-2",
+          "title": "Adobe Photoshop Basics",
+          "description": "Introduction to Adobe Photoshop for creating and editing graphics.",
+          "orderIndex": 1,
+          "courseId": "course-5"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-5"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-6",
+      "title": "Machine Learning Fundamentals",
+      "thumbnailUrl": "",
+      "description": "An introduction to machine learning concepts and algorithms.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 45,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-6-1",
+          "title": "Introduction to Machine Learning",
+          "description": "Overview of machine learning and its applications.",
+          "orderIndex": 0,
+          "courseId": "course-6"
+        },
+        {
+          "id": "module-6-2",
+          "title": "Supervised Learning Algorithms",
+          "description": "Deep dive into supervised learning techniques like regression and classification.",
+          "orderIndex": 1,
+          "courseId": "course-6"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-6"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-7",
+      "title": "Project Management Professional (PMP) Prep",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Prepare for the PMP certification exam with comprehensive study materials.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 50,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-7-1",
+          "title": "Project Initiation",
+          "description": "Learn how to initiate and define projects effectively.",
+          "orderIndex": 0,
+          "courseId": "course-7"
+        },
+        {
+          "id": "module-7-2",
+          "title": "Project Planning",
+          "description": "Master project planning techniques and tools.",
+          "orderIndex": 1,
+          "courseId": "course-7"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-7"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-8",
+      "title": "Introduction to Cybersecurity",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn the essentials of cybersecurity to protect information systems.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 40,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-8-1",
+          "title": "Cybersecurity Basics",
+          "description": "Understanding the fundamentals of cybersecurity and threat landscapes.",
+          "orderIndex": 0,
+          "courseId": "course-8"
+        },
+        {
+          "id": "module-8-2",
+          "title": "Network Security",
+          "description": "Implementing security measures to protect network infrastructures.",
+          "orderIndex": 1,
+          "courseId": "course-8"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-8"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-9",
+      "title": "Advanced Java Programming",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Deepen your Java programming skills with advanced concepts and frameworks.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 55,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-9-1",
+          "title": "Java Streams and Lambdas",
+          "description": "Utilizing streams and lambda expressions for efficient data processing.",
+          "orderIndex": 0,
+          "courseId": "course-9"
+        },
+        {
+          "id": "module-9-2",
+          "title": "Spring Framework Basics",
+          "description": "Introduction to the Spring Framework for building enterprise applications.",
+          "orderIndex": 1,
+          "courseId": "course-9"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-9"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-10",
+      "title": "Financial Accounting Principles",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Understand the fundamental principles of financial accounting and reporting.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 30,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-10-1",
+          "title": "Introduction to Financial Accounting",
+          "description": "Basic concepts and objectives of financial accounting.",
+          "orderIndex": 0,
+          "courseId": "course-10"
+        },
+        {
+          "id": "module-10-2",
+          "title": "Financial Statements Analysis",
+          "description": "Analyzing and interpreting financial statements for decision-making.",
+          "orderIndex": 1,
+          "courseId": "course-10"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-10"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-11",
+      "title": "Mobile App Development with Flutter",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Create beautiful and responsive mobile applications using Flutter.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 60,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-11-1",
+          "title": "Flutter Basics",
+          "description": "Setting up Flutter and understanding its architecture.",
+          "orderIndex": 0,
+          "courseId": "course-11"
+        },
+        {
+          "id": "module-11-2",
+          "title": "State Management",
+          "description": "Managing state effectively in Flutter applications.",
+          "orderIndex": 1,
+          "courseId": "course-11"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-11"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-12",
+      "title": "Creative Writing Workshop",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Enhance your creative writing skills through practical exercises and feedback.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 20,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-12-1",
+          "title": "Storytelling Techniques",
+          "description": "Develop compelling narratives and character development.",
+          "orderIndex": 0,
+          "courseId": "course-12"
+        },
+        {
+          "id": "module-12-2",
+          "title": "Editing and Revision",
+          "description": "Refine your writing through effective editing strategies.",
+          "orderIndex": 1,
+          "courseId": "course-12"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-12"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-13",
+      "title": "Photography Masterclass",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Master the art of photography, from basic techniques to advanced editing.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 40,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-13-1",
+          "title": "Camera Settings and Techniques",
+          "description": "Understanding camera settings, lighting, and composition.",
+          "orderIndex": 0,
+          "courseId": "course-13"
+        },
+        {
+          "id": "module-13-2",
+          "title": "Photo Editing with Lightroom",
+          "description": "Enhancing your photos using Adobe Lightroom.",
+          "orderIndex": 1,
+          "courseId": "course-13"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-13"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-14",
+      "title": "Introduction to Artificial Intelligence",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Explore the fundamentals of artificial intelligence and its applications.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 50,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-14-1",
+          "title": "AI Concepts and History",
+          "description": "Understanding the evolution and key concepts of AI.",
+          "orderIndex": 0,
+          "courseId": "course-14"
+        },
+        {
+          "id": "module-14-2",
+          "title": "Machine Learning Basics",
+          "description": "Introduction to machine learning algorithms and techniques.",
+          "orderIndex": 1,
+          "courseId": "course-14"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-14"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-15",
+      "title": "Public Speaking and Presentation Skills",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Improve your public speaking abilities and deliver effective presentations.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 25,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-15-1",
+          "title": "Overcoming Public Speaking Anxiety",
+          "description": "Techniques to manage and reduce anxiety when speaking publicly.",
+          "orderIndex": 0,
+          "courseId": "course-15"
+        },
+        {
+          "id": "module-15-2",
+          "title": "Effective Presentation Design",
+          "description": "Creating visually appealing and engaging presentations.",
+          "orderIndex": 1,
+          "courseId": "course-15"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-15"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-16",
+      "title": "Blockchain Technology Explained",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Understand the principles of blockchain technology and its real-world applications.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 55,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-16-1",
+          "title": "Blockchain Fundamentals",
+          "description": "Core concepts and architecture of blockchain technology.",
+          "orderIndex": 0,
+          "courseId": "course-16"
+        },
+        {
+          "id": "module-16-2",
+          "title": "Smart Contracts and DApps",
+          "description": "Building decentralized applications and smart contracts on blockchain platforms.",
+          "orderIndex": 1,
+          "courseId": "course-16"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-16"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-17",
+      "title": "Nutrition and Wellness",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn about healthy eating habits, nutrition science, and wellness practices.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 18,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-17-1",
+          "title": "Basics of Nutrition",
+          "description": "Understanding macronutrients and micronutrients.",
+          "orderIndex": 0,
+          "courseId": "course-17"
+        },
+        {
+          "id": "module-17-2",
+          "title": "Creating a Balanced Diet",
+          "description": "Designing meal plans for optimal health and wellness.",
+          "orderIndex": 1,
+          "courseId": "course-17"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-17"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-18",
+      "title": "English Grammar and Composition",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Enhance your English grammar skills and improve your writing composition.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 22,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-18-1",
+          "title": "Grammar Essentials",
+          "description": "Master the rules of English grammar and sentence structure.",
+          "orderIndex": 0,
+          "courseId": "course-18"
+        },
+        {
+          "id": "module-18-2",
+          "title": "Effective Writing Techniques",
+          "description": "Develop clear and concise writing skills for various purposes.",
+          "orderIndex": 1,
+          "courseId": "course-18"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-18"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-19",
+      "title": "Basics of Economics",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Understand fundamental economic principles and theories.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 28,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-19-1",
+          "title": "Microeconomics",
+          "description": "Study of individual consumers and businesses.",
+          "orderIndex": 0,
+          "courseId": "course-19"
+        },
+        {
+          "id": "module-19-2",
+          "title": "Macroeconomics",
+          "description": "Analysis of the economy as a whole, including inflation and unemployment.",
+          "orderIndex": 1,
+          "courseId": "course-19"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-19"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-20",
+      "title": "Introduction to Sociology",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Explore the study of society, social relationships, and institutions.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 24,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-20-1",
+          "title": "Foundations of Sociology",
+          "description": "Basic concepts and theories in sociology.",
+          "orderIndex": 0,
+          "courseId": "course-20"
+        },
+        {
+          "id": "module-20-2",
+          "title": "Social Institutions",
+          "description": "Examination of family, education, religion, and other social institutions.",
+          "orderIndex": 1,
+          "courseId": "course-20"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-20"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-21",
+      "title": "Basics of Graphic Design",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn the essential principles and tools of graphic design.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 27,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-21-1",
+          "title": "Design Principles",
+          "description": "Understanding balance, contrast, hierarchy, and alignment in design.",
+          "orderIndex": 0,
+          "courseId": "course-21"
+        },
+        {
+          "id": "module-21-2",
+          "title": "Adobe Illustrator Basics",
+          "description": "Introduction to creating vector graphics using Adobe Illustrator.",
+          "orderIndex": 1,
+          "courseId": "course-21"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-21"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-22",
+      "title": "Human Resource Management",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn effective HR management strategies and practices.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 33,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-22-1",
+          "title": "Recruitment and Selection",
+          "description": "Strategies for attracting and selecting the right talent.",
+          "orderIndex": 0,
+          "courseId": "course-22"
+        },
+        {
+          "id": "module-22-2",
+          "title": "Performance Management",
+          "description": "Techniques for evaluating and improving employee performance.",
+          "orderIndex": 1,
+          "courseId": "course-22"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-22"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-23",
+      "title": "Introduction to Philosophy",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Explore fundamental philosophical questions and theories.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 19,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-23-1",
+          "title": "Branches of Philosophy",
+          "description": "Overview of metaphysics, epistemology, ethics, and more.",
+          "orderIndex": 0,
+          "courseId": "course-23"
+        },
+        {
+          "id": "module-23-2",
+          "title": "Philosophical Thinkers",
+          "description": "Study of influential philosophers and their contributions.",
+          "orderIndex": 1,
+          "courseId": "course-23"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-23"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-24",
+      "title": "Basics of Data Science",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Introduction to data science concepts, tools, and methodologies.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 48,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-24-1",
+          "title": "Data Collection and Cleaning",
+          "description": "Techniques for gathering and preprocessing data.",
+          "orderIndex": 0,
+          "courseId": "course-24"
+        },
+        {
+          "id": "module-24-2",
+          "title": "Data Visualization",
+          "description": "Creating insightful visualizations using tools like Tableau and matplotlib.",
+          "orderIndex": 1,
+          "courseId": "course-24"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-24"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-25",
+      "title": "Introduction to Finance",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn the basics of financial management and investment strategies.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 26,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-25-1",
+          "title": "Financial Statements",
+          "description": "Understanding balance sheets, income statements, and cash flow statements.",
+          "orderIndex": 0,
+          "courseId": "course-25"
+        },
+        {
+          "id": "module-25-2",
+          "title": "Investment Fundamentals",
+          "description": "Basics of investing, portfolio management, and risk assessment.",
+          "orderIndex": 1,
+          "courseId": "course-25"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-25"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-26",
+      "title": "Basics of Public Health",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "An overview of public health principles and practices.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 35,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-26-1",
+          "title": "Epidemiology",
+          "description": "Study of disease distribution and determinants in populations.",
+          "orderIndex": 0,
+          "courseId": "course-26"
+        },
+        {
+          "id": "module-26-2",
+          "title": "Health Promotion",
+          "description": "Strategies for promoting health and preventing disease.",
+          "orderIndex": 1,
+          "courseId": "course-26"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-26"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-27",
+      "title": "Basics of Electrical Engineering",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Introduction to electrical engineering concepts and circuits.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 38,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-27-1",
+          "title": "Circuit Analysis",
+          "description": "Understanding voltage, current, resistance, and Ohm's Law.",
+          "orderIndex": 0,
+          "courseId": "course-27"
+        },
+        {
+          "id": "module-27-2",
+          "title": "Electromagnetism",
+          "description": "Basics of electromagnetism and its applications.",
+          "orderIndex": 1,
+          "courseId": "course-27"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-27"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-28",
+      "title": "Introduction to Law",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn the basics of legal systems, rights, and responsibilities.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 29,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-28-1",
+          "title": "Legal Systems and Structures",
+          "description": "Overview of different legal systems and their structures.",
+          "orderIndex": 0,
+          "courseId": "course-28"
+        },
+        {
+          "id": "module-28-2",
+          "title": "Rights and Responsibilities",
+          "description": "Understanding individual rights and legal responsibilities.",
+          "orderIndex": 1,
+          "courseId": "course-28"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-28"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-29",
+      "title": "Basics of Chemistry",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Introduction to chemical principles, reactions, and laboratory techniques.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 31,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-29-1",
+          "title": "Chemical Reactions",
+          "description": "Understanding different types of chemical reactions and equations.",
+          "orderIndex": 0,
+          "courseId": "course-29"
+        },
+        {
+          "id": "module-29-2",
+          "title": "Laboratory Safety and Techniques",
+          "description": "Best practices for safety and effective laboratory work.",
+          "orderIndex": 1,
+          "courseId": "course-29"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-29"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-30",
+      "title": "Basics of Statistics",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn fundamental statistical concepts and data analysis techniques.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 34,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-30-1",
+          "title": "Descriptive Statistics",
+          "description": "Summarizing and describing data sets.",
+          "orderIndex": 0,
+          "courseId": "course-30"
+        },
+        {
+          "id": "module-30-2",
+          "title": "Inferential Statistics",
+          "description": "Drawing conclusions and making predictions from data.",
+          "orderIndex": 1,
+          "courseId": "course-30"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-30"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-31",
+      "title": "Introduction to Environmental Science",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Explore environmental issues, sustainability, and conservation strategies.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 23,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-31-1",
+          "title": "Ecosystems and Biodiversity",
+          "description": "Understanding ecosystems, biodiversity, and their importance.",
+          "orderIndex": 0,
+          "courseId": "course-31"
+        },
+        {
+          "id": "module-31-2",
+          "title": "Sustainability Practices",
+          "description": "Implementing sustainable practices to protect the environment.",
+          "orderIndex": 1,
+          "courseId": "course-31"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-31"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-32",
+      "title": "Basics of Psychology",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Introduction to psychological theories, behavior, and mental processes.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 21,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-32-1",
+          "title": "Introduction to Psychological Theories",
+          "description": "Overview of major psychological theories and their applications.",
+          "orderIndex": 0,
+          "courseId": "course-32"
+        },
+        {
+          "id": "module-32-2",
+          "title": "Behavioral Psychology",
+          "description": "Understanding behavior through the lens of psychological principles.",
+          "orderIndex": 1,
+          "courseId": "course-32"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-32"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-33",
+      "title": "Introduction to Astronomy",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Explore the universe, celestial bodies, and the fundamentals of astronomy.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 37,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-33-1",
+          "title": "Celestial Objects",
+          "description": "Study of stars, planets, galaxies, and other celestial phenomena.",
+          "orderIndex": 0,
+          "courseId": "course-33"
+        },
+        {
+          "id": "module-33-2",
+          "title": "Cosmology",
+          "description": "Understanding the origin, evolution, and fate of the universe.",
+          "orderIndex": 1,
+          "courseId": "course-33"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-33"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-34",
+      "title": "Introduction to Music Theory",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn the basics of music theory, including notation, scales, and harmony.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 19,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-34-1",
+          "title": "Musical Notation",
+          "description": "Understanding how music is written and read.",
+          "orderIndex": 0,
+          "courseId": "course-34"
+        },
+        {
+          "id": "module-34-2",
+          "title": "Scales and Chords",
+          "description": "Exploring different scales and chord progressions in music.",
+          "orderIndex": 1,
+          "courseId": "course-34"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-34"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-35",
+      "title": "Basics of Marketing",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn fundamental marketing principles and strategies for business growth.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 32,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-35-1",
+          "title": "Marketing Fundamentals",
+          "description": "Understanding the core concepts of marketing and consumer behavior.",
+          "orderIndex": 0,
+          "courseId": "course-35"
+        },
+        {
+          "id": "module-35-2",
+          "title": "Digital Marketing Strategies",
+          "description": "Implementing effective digital marketing campaigns.",
+          "orderIndex": 1,
+          "courseId": "course-35"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-35"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-36",
+      "title": "Basics of Graphic Design",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn the essential principles and tools of graphic design.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 29,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-36-1",
+          "title": "Design Principles",
+          "description": "Understanding balance, contrast, hierarchy, and alignment in design.",
+          "orderIndex": 0,
+          "courseId": "course-36"
+        },
+        {
+          "id": "module-36-2",
+          "title": "Adobe Photoshop Basics",
+          "description": "Introduction to creating and editing graphics using Adobe Photoshop.",
+          "orderIndex": 1,
+          "courseId": "course-36"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-36"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-37",
+      "title": "Introduction to Robotics",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Explore the basics of robotics, including design, programming, and applications.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 42,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-37-1",
+          "title": "Robotics Fundamentals",
+          "description": "Understanding the components and architecture of robots.",
+          "orderIndex": 0,
+          "courseId": "course-37"
+        },
+        {
+          "id": "module-37-2",
+          "title": "Programming Robots",
+          "description": "Introduction to programming languages and software used in robotics.",
+          "orderIndex": 1,
+          "courseId": "course-37"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-37"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-38",
+      "title": "Basics of Sociology",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Study the development, structure, and functioning of human society.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 27,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-38-1",
+          "title": "Social Structures",
+          "description": "Understanding the organization of society and its institutions.",
+          "orderIndex": 0,
+          "courseId": "course-38"
+        },
+        {
+          "id": "module-38-2",
+          "title": "Cultural Sociology",
+          "description": "Exploring the role of culture in shaping societal norms and values.",
+          "orderIndex": 1,
+          "courseId": "course-38"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-38"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-39",
+      "title": "Basics of Political Science",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Introduction to political systems, theories, and governance.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 30,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-39-1",
+          "title": "Political Theories",
+          "description": "Overview of major political theories and ideologies.",
+          "orderIndex": 0,
+          "courseId": "course-39"
+        },
+        {
+          "id": "module-39-2",
+          "title": "Governance and Policy",
+          "description": "Understanding how policies are formulated and implemented.",
+          "orderIndex": 1,
+          "courseId": "course-39"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-39"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-40",
+      "title": "Introduction to Linguistics",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Study the scientific analysis of language and its structure.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 24,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-40-1",
+          "title": "Phonetics and Phonology",
+          "description": "Understanding the sounds of human language.",
+          "orderIndex": 0,
+          "courseId": "course-40"
+        },
+        {
+          "id": "module-40-2",
+          "title": "Syntax and Semantics",
+          "description": "Study of sentence structure and meaning in language.",
+          "orderIndex": 1,
+          "courseId": "course-40"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-40"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-41",
+      "title": "Basics of Anthropology",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Explore human societies, cultures, and their development.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 28,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-41-1",
+          "title": "Cultural Anthropology",
+          "description": "Study of cultural variations among humans.",
+          "orderIndex": 0,
+          "courseId": "course-41"
+        },
+        {
+          "id": "module-41-2",
+          "title": "Physical Anthropology",
+          "description": "Understanding human biological and physiological characteristics.",
+          "orderIndex": 1,
+          "courseId": "course-41"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-41"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-42",
+      "title": "Introduction to Geology",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn about Earth's structure, materials, and geological processes.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 36,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-42-1",
+          "title": "Earth's Structure",
+          "description": "Study of Earth's layers, including the crust, mantle, and core.",
+          "orderIndex": 0,
+          "courseId": "course-42"
+        },
+        {
+          "id": "module-42-2",
+          "title": "Geological Processes",
+          "description": "Understanding plate tectonics, earthquakes, and volcanic activity.",
+          "orderIndex": 1,
+          "courseId": "course-42"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-42"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-43",
+      "title": "Basics of Marketing Analytics",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn how to analyze marketing data to make informed business decisions.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 39,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-43-1",
+          "title": "Data Collection Methods",
+          "description": "Techniques for gathering marketing data effectively.",
+          "orderIndex": 0,
+          "courseId": "course-43"
+        },
+        {
+          "id": "module-43-2",
+          "title": "Data Analysis Techniques",
+          "description": "Analyzing marketing data using statistical tools and software.",
+          "orderIndex": 1,
+          "courseId": "course-43"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-43"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-44",
+      "title": "Introduction to Quantum Physics",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Explore the principles of quantum mechanics and their applications.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 52,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-44-1",
+          "title": "Quantum Mechanics Basics",
+          "description": "Understanding the fundamental principles of quantum physics.",
+          "orderIndex": 0,
+          "courseId": "course-44"
+        },
+        {
+          "id": "module-44-2",
+          "title": "Applications of Quantum Physics",
+          "description": "Exploring real-world applications of quantum mechanics.",
+          "orderIndex": 1,
+          "courseId": "course-44"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-44"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-45",
+      "title": "Basics of International Relations",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Study the interactions between nations, including diplomacy and conflict.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 34,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-45-1",
+          "title": "Theories of International Relations",
+          "description": "Overview of major theories like realism, liberalism, and constructivism.",
+          "orderIndex": 0,
+          "courseId": "course-45"
+        },
+        {
+          "id": "module-45-2",
+          "title": "Global Governance",
+          "description": "Understanding international organizations and their roles.",
+          "orderIndex": 1,
+          "courseId": "course-45"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-45"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-46",
+      "title": "Introduction to Ethics",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Explore ethical theories and their applications in various contexts.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 20,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-46-1",
+          "title": "Ethical Theories",
+          "description": "Study of consequentialism, deontology, virtue ethics, and more.",
+          "orderIndex": 0,
+          "courseId": "course-46"
+        },
+        {
+          "id": "module-46-2",
+          "title": "Applied Ethics",
+          "description": "Applying ethical theories to real-world dilemmas and professions.",
+          "orderIndex": 1,
+          "courseId": "course-46"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-46"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-47",
+      "title": "Basics of Renewable Energy",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn about renewable energy sources and their role in sustainable development.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 40,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-47-1",
+          "title": "Solar and Wind Energy",
+          "description": "Understanding the principles and technologies behind solar and wind power.",
+          "orderIndex": 0,
+          "courseId": "course-47"
+        },
+        {
+          "id": "module-47-2",
+          "title": "Hydroelectric and Geothermal Energy",
+          "description": "Exploring other renewable energy sources and their applications.",
+          "orderIndex": 1,
+          "courseId": "course-47"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-47"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-48",
+      "title": "Introduction to Artificial Neural Networks",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn the basics of artificial neural networks and their applications in AI.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 50,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-48-1",
+          "title": "Neural Network Architecture",
+          "description": "Understanding the structure and components of neural networks.",
+          "orderIndex": 0,
+          "courseId": "course-48"
+        },
+        {
+          "id": "module-48-2",
+          "title": "Training and Optimization",
+          "description": "Techniques for training neural networks and optimizing their performance.",
+          "orderIndex": 1,
+          "courseId": "course-48"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-48"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-49",
+      "title": "Basics of Supply Chain Management",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Learn how to manage and optimize supply chains for business efficiency.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 31,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-49-1",
+          "title": "Supply Chain Fundamentals",
+          "description": "Understanding the components and functions of supply chains.",
+          "orderIndex": 0,
+          "courseId": "course-49"
+        },
+        {
+          "id": "module-49-2",
+          "title": "Logistics and Inventory Management",
+          "description": "Techniques for managing logistics and inventory effectively.",
+          "orderIndex": 1,
+          "courseId": "course-49"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-49"
+    },
+    {
+      "createdAt": "2024-11-12T04:29:40.048Z",
+      "updatedAt": "2024-11-12T04:29:40.048Z",
+      "id": "course-50",
+      "title": "Introduction to Behavioral Economics",
+      "thumbnailUrl": "https://via.placeholder.cosm/100",
+      "description": "Explore the intersection of psychology and economics to understand decision-making.",
+      "transcriptUrl": "https://example.com/transcript",
+      "price": 45,
+      "status": "DRAFT",
+      "modules": [
+        {
+          "id": "module-50-1",
+          "title": "Behavioral Economic Theories",
+          "description": "Study of how psychological factors influence economic decisions.",
+          "orderIndex": 0,
+          "courseId": "course-50"
+        },
+        {
+          "id": "module-50-2",
+          "title": "Applications in Policy and Business",
+          "description": "Applying behavioral economics principles to policy-making and business strategies.",
+          "orderIndex": 1,
+          "courseId": "course-50"
+        }
+      ],
+      "deleted": false,
+      "instructorId": "instructor-50"
+    }
+  ]
+  
