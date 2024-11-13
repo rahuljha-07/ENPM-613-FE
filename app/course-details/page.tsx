@@ -8,7 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import dummyCourses from './dummyCourses.json';
 import 'react-toastify/dist/ReactToastify.css';
 
-const PUBLISHED_COURSES = `${process.env.NEXT_PUBLIC_ILIM_BE}/course-details`;
+const PUBLISHED_COURSES = `${process.env.NEXT_PUBLIC_ILIM_BE}/course/published`;
 const DEFAULT_THUMBNAIL_URL = "https://as1.ftcdn.net/v2/jpg/05/79/68/24/1000_F_579682479_j4jRfx0nl3C8vMrTYVapFnGP8EgNHgfk.jpg";
 
 export default function CourseDetailsPage() {
