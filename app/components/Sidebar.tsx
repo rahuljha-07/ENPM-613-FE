@@ -8,6 +8,7 @@ import { Home, Book, User, HelpCircle, Settings, LogOut, FileText, Upload, Chevr
 export default function Sidebar() {
   const router = useRouter();
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isManageCoursesOpen, setIsManageCoursesOpen] = useState(false);
 
   // Function to handle logout logic
   const handleLogout = (e) => {
@@ -18,6 +19,7 @@ export default function Sidebar() {
 
   // Toggle Admin dropdown visibility
   const toggleAdminDropdown = () => setIsAdminOpen((prev) => !prev);
+  const toggleManageCourses = () => setIsManageCoursesOpen((prev) => !prev);
 
   return (
     <div className="w-20 lg:w-60 h-screen bg-gradient-to-br from-gray-800 to-gray-900 text-white flex flex-col items-center lg:items-start p-4">
@@ -55,7 +57,22 @@ export default function Sidebar() {
         <NavItem href="/support" label="Support" icon={<HelpCircle className="w-5 h-5 lg:w-6 lg:h-6" />} />
         <NavItem href="/about" label="About" icon={<FileText className="w-5 h-5 lg:w-6 lg:h-6" />} />
         <NavItem href="/settings" label="Settings" icon={<Settings className="w-5 h-5 lg:w-6 lg:h-6" />} />
-        <NavItem href="/upload-course" label="Manage Courses" icon={<Upload className="w-5 h-5 lg:w-6 lg:h-6" />} />
+        <Button
+          variant="ghost"
+          onClick={toggleManageCourses}
+          className="flex items-center space-x-2 text-white w-full justify-center lg:justify-start lg:px-4 py-3 rounded-lg hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-500"
+        >
+          <Upload className="w-5 h-5 lg:w-6 lg:h-6" />
+          <span className="hidden lg:inline lg:ml-3 text-sm font-semibold">Manage Courses</span>
+          <ChevronDown className={`w-4 h-4 lg:w-5 lg:h-5 transform ${isManageCoursesOpen ? 'rotate-180' : 'rotate-0'}`} />
+        </Button>
+
+        {isManageCoursesOpen && (
+          <div className="mt-2 space-y-2 lg:pl-6">
+            <DropdownItem href="/manage-courses/course-management" label="Course Management" />
+            <DropdownItem href="/manage-courses/upload-course" label="Upload Course" />
+          </div>
+        )}
         
         {/* Logout item with onClick handler */}
         <NavItem href="/" label="Logout" icon={<LogOut className="w-5 h-5 lg:w-6 lg:h-6" />} onClick={handleLogout} />
