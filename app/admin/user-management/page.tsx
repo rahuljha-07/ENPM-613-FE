@@ -1,33 +1,56 @@
-// pages/admin/user.js
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
+import Sidebar from '../../components/Sidebar';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-export default function GetUserDetails() {
-  const [userDetails, setUserDetails] = useState(null);
+export default function ApproveInstructorApplication() {
+  const BASE_URL = process.env.NEXT_PUBLIC_ILIM_BE;
 
-  const fetchUserDetails = () => {
-    // Replace with actual API call
-    setUserDetails({
-      name: "John Doe",
-      email: "johndoe@example.com",
-      role: "Instructor",
-    });
+  const handleApproveApplication = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/admin/approve-instructor-application`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: "Approval message" }),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        toast.success('Instructor application approved successfully!');
+      } else {
+        toast.error(`Error: ${result.message || 'Something went wrong'}`);
+      }
+    } catch (error) {
+      toast.error('Failed to connect to the API');
+      console.error(error);
+    }
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen flex flex-col items-center text-gray-800">
-      <h2 className="text-4xl font-bold mb-6 text-blue-600 text-center">User Details</h2>
-      <button onClick={fetchUserDetails} className="px-4 py-2 rounded-md bg-blue-500 text-white mb-4">
-        Fetch User Details
-      </button>
-      {userDetails && (
-        <div className="text-lg text-gray-700">
-          <p><strong>Name:</strong> {userDetails.name}</p>
-          <p><strong>Email:</strong> {userDetails.email}</p>
-          <p><strong>Role:</strong> {userDetails.role}</p>
+    <div className="flex h-screen">
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
+      
+      {/* Sidebar */}
+      <div className="fixed h-full">
+        <Sidebar />
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 p-6 pl-20 lg:pl-56 ml-16 overflow-y-auto">
+        <div className="p-8 bg-gray-50 min-h-screen flex flex-col items-center text-gray-800">
+          <h2 className="text-3xl font-bold mb-4 text-green-500">Approve Instructor Application</h2>
+          <p className="text-lg text-gray-600 mb-6 text-center">This page allows you to approve an instructor application.</p>
+          <button
+            onClick={handleApproveApplication}
+            className="px-6 py-2 rounded-md text-white bg-green-500 hover:bg-green-600"
+          >
+            Approve Application
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 }
