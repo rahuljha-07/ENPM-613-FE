@@ -24,12 +24,14 @@ export default function SupportPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('accessToken'); // Get the token from localStorage
 
     try {
       const response = await fetch(BASE_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // Add Bearer token to headers
         },
         body: JSON.stringify(formData),
       });
