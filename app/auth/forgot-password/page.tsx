@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -9,6 +10,7 @@ const FORGOT_PASSWORD_URL = `${process.env.NEXT_PUBLIC_ILIM_BE}/auth/forgot-pass
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -26,12 +28,14 @@ export default function ForgotPassword() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: email,
       });
 
       if (response.ok) {
-        toast.success('Password reset link sent to your email!');
+        toast.success('Password reset confirmation code sent to your email!');
         setEmail(''); // Clear the email input after successful request
+        // Redirect to the reset-password page
+        router.push('/auth/reset-password');
       } else {
         const errorData = await response.json();
         toast.error(errorData.message || 'Failed to send reset link');
@@ -71,7 +75,7 @@ export default function ForgotPassword() {
             className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
             disabled={loading}
           >
-            {loading ? 'Sending...' : 'Send Reset Link'}
+            {loading ? 'Sending...' : 'Send Reset OTP'}
           </button>
         </form>
 

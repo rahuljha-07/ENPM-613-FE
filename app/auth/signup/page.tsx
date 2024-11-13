@@ -51,17 +51,17 @@ export default function SignUp() {
         });
 
         if (response.ok) {
-          toast.success('Sign-up successful!');
+          toast.success(`${response.body}`);
           setFormData({
             name: '',
             birthdate: '',
             email: '',
             password: '',
           });
-          router.push('/auth/verification');
+          router.push(`/auth/verification?email=${formData.email}`);
         } else {
           const errorData = await response.json();
-          toast.error(`Sign-up failed: ${errorData.message}`);
+          toast.error(`Sign-up failed: ${errorData.body}`);
         }
       } catch (error) {
         console.error('Error during sign-up:', error);

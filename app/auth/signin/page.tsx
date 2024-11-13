@@ -3,15 +3,49 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid'; // Import icons from Heroicons
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 import 'react-toastify/dist/ReactToastify.css';
 
 const SIGN_IN = `${process.env.NEXT_PUBLIC_ILIM_BE}/auth/sign-in`;
+const USER_ENDPOINT = `${process.env.NEXT_PUBLIC_ILIM_BE}/user`;
 
 export default function SignIn() {
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [showPassword, setShowPassword] = useState(false); // State for toggling password visibility
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+
+  // Function to store tokens in local storage
+  const storeTokensInLocalStorage = async (data) => {
+    try {
+      localStorage.setItem('accessToken', data.accessToken);
+    } catch (error) {
+      console.error("Failed to store tokens in local storage:", error);
+    }
+  };
+
+  // Function to retrieve and store user role in local storage
+  const fetchAndStoreUserRole = async () => {
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      const response = await fetch(USER_ENDPOINT, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        const userData = await response.json();
+        console.log(userData)
+        const userRole = userData.body.role;
+        localStorage.setItem('role', userRole);
+      } else {
+        console.error("Failed to fetch user role:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching user role:", error);
+    }
+  };
 
   // Handle input changes
   const handleChange = (e) => {
@@ -32,12 +66,17 @@ export default function SignIn() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials:"include",
+        credentials: "include",
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         const data = await response.json();
+        
+        // Store tokens in local storage
+        await storeTokensInLocalStorage(data);
+        await fetchAndStoreUserRole();
+
         toast.success('Sign-in successful!');
         console.log('Sign-in successful:', data);
 
@@ -45,8 +84,8 @@ export default function SignIn() {
         router.push('/course-details');
       } else {
         const errorData = await response.json();
-        toast.error(errorData.message || 'Sign-in failed');
-     
+        const errMsg= errorData.body.split('.')[0];
+        toast.error(errMsg || 'Sign-in failed');
       }
     } catch (error) {
       console.error('Error during sign-in:', error);

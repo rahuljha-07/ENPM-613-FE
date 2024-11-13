@@ -1,8 +1,7 @@
-// app/auth/verification/page.jsx
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -11,6 +10,15 @@ const VERIFY_ACCOUNT_URL = `${process.env.NEXT_PUBLIC_ILIM_BE}/auth/verify-accou
 export default function Verification() {
   const [verificationCode, setVerificationCode] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get('email');  // Retrieve email from URL parameters
+
+  useEffect(() => {
+    if (!email) {
+      toast.error("Email is missing. Please go back to the sign-up page.");
+      router.push('/auth/signin');
+    }
+  }, [email, router]);
 
   // Handle input change
   const handleChange = (e) => {
@@ -27,12 +35,12 @@ export default function Verification() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ code: verificationCode }),
+        body: JSON.stringify({ email, confirmationCode: verificationCode }), // Include email and confirmationCode
       });
 
       if (response.ok) {
         toast.success('Verification successful!');
-        router.push('/course-details');
+        router.push('/signin');
       } else {
         const errorData = await response.json();
         toast.error(errorData.message || 'Verification failed');
