@@ -32,6 +32,7 @@ export default function SignIn() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials:"include",
         body: JSON.stringify(formData),
       });
 
@@ -45,7 +46,7 @@ export default function SignIn() {
       } else {
         const errorData = await response.json();
         toast.error(errorData.message || 'Sign-in failed');
-        router.push('/course-details'); //remove later
+     
       }
     } catch (error) {
       console.error('Error during sign-in:', error);

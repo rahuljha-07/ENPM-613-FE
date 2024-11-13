@@ -1,4 +1,3 @@
-// app/purchased-courses/page.tsx
 import Sidebar from '../components/Sidebar';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -19,30 +18,37 @@ export default function PurchasedCoursesPage() {
         <Sidebar />
       </div>
 
-      {/* Main Content with adjusted padding */}
-      <div className="flex-1 ml-16 lg:ml-48 p-6 bg-gray-100 overflow-y-auto h-screen">
-        <h1 className="text-3xl font-bold mb-4">Purchased Courses</h1>
-        <p className="text-lg mb-8">Welcome Back!</p>
+      {/* Main Content with adjusted padding to prevent overlap */}
+      <div className="flex-1 ml-20 lg:ml-60 p-8 bg-gradient-to-br from-gray-100 to-gray-200 h-screen overflow-y-auto">
+        <h1 className="text-4xl font-extrabold text-gray-800 mb-6">Purchased Courses</h1>
+        <p className="text-lg font-medium text-gray-700 mb-8">Welcome back! Here are your enrolled courses.</p>
 
         {/* List of Purchased Courses */}
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {purchasedCourses.map((course) => (
-            <div key={course.id} className="bg-white p-6 rounded-lg shadow-md flex items-center">
-              <div className="flex-1">
-                <h2 className="text-xl font-semibold">{course.title} - {course.instructor}</h2>
-                <p className="text-gray-500 text-sm">Date Purchased: {course.date}</p>
-                
+            <div key={course.id} className="bg-white p-6 rounded-lg shadow-lg flex flex-col justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-2">{course.title}</h2>
+                <p className="text-gray-500 text-sm mb-2">Instructor: {course.instructor}</p>
+                <p className="text-gray-500 text-sm mb-4">Date Purchased: {course.date}</p>
+
                 {/* Progress Bar */}
-                <Progress value={course.progress} className="my-4" />
-                <p className="text-sm text-gray-700">Progress: {course.progress}%</p>
+                <div className="my-4">
+                  <Progress value={course.progress} className="h-2 rounded-full bg-gray-200" />
+                  <p className="text-sm text-gray-600 mt-1">Progress: {course.progress}%</p>
+                </div>
               </div>
 
               {/* Continue or View Certificate Button */}
-              <div className="ml-4">
+              <div className="mt-4">
                 {course.progress === 100 ? (
-                  <Button variant="outline">View Certificate</Button>
+                  <Button className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-semibold transition duration-200">
+                    View Certificate
+                  </Button>
                 ) : (
-                  <Button variant="outline">Continue</Button>
+                  <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold transition duration-200">
+                    Continue
+                  </Button>
                 )}
               </div>
             </div>

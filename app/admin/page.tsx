@@ -1,27 +1,17 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
+import Link from 'next/link';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function AdminPage() {
-  const [inputValue, setInputValue] = useState('');
-  const [inputType, setInputType] = useState('');
   const BASE_URL = process.env.NEXT_PUBLIC_ILIM_BE;
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
-
-  const handleButtonClick = (action) => {
-    setInputType(action);
-    setInputValue(''); // Reset input field for a new action
-  };
-
-  const apiCall = async (url, method, body = null) => {
+  const apiCall = async (url, body = null) => {
     try {
       const response = await fetch(`${BASE_URL}${url}`, {
-        method,
+        method: body ? 'POST' : 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -41,52 +31,72 @@ export default function AdminPage() {
   };
 
   const actions = [
-    { label: 'Reject Instructor Application', color: 'bg-red-500', url: '/admin/reject-instructor-application', method: 'POST', body: { instructorApplicationId: inputValue, message: "Rejection message" } },
-    { label: 'Block User', color: 'bg-red-500', url: `/admin/block-user/${inputValue}`, method: 'POST' },
-    { label: 'Approve Instructor Application', color: 'bg-green-500', url: '/admin/approve-instructor-application', method: 'POST', body: { instructorApplicationId: inputValue, message: "Approval message" } },
-    { label: 'Approve Course', color: 'bg-green-500', url: `/admin/approve-course/${inputValue}`, method: 'POST' },
-    { label: 'Get User Details', color: 'bg-blue-500', url: `/admin/user/${inputValue}`, method: 'GET' },
-    { label: 'Get All Users', color: 'bg-blue-500', url: '/admin/user/all', method: 'GET' },
-    { label: 'Get All Courses', color: 'bg-blue-500', url: '/admin/course/all', method: 'GET' },
-    { label: 'Delete Course', color: 'bg-red-500', url: `/admin/delete-course/${inputValue}`, method: 'DELETE' },
+    {
+      label: 'Reject Instructor Application',
+      color: 'bg-red-500',
+      url: '/admin/reject-instructor-application',
+      body: { message: "Rejection message" },
+    },
+    {
+      label: 'Block User',
+      color: 'bg-red-500',
+      url: '/admin/block-user',
+    },
+    {
+      label: 'Approve Instructor Application',
+      color: 'bg-green-500',
+      url: '/admin/approve-instructor-application',
+      body: { message: "Approval message" },
+    },
+    {
+      label: 'Approve Course',
+      color: 'bg-green-500',
+      url: '/admin/approve-courses',
+    },
+    {
+      label: 'Get User Details',
+      color: 'bg-blue-500',
+      url: '/admin/get-use-details',
+    },
+    {
+      label: 'Get All Users',
+      color: 'bg-blue-500',
+      url: '/admin/get-all-user',
+    },
+    {
+      label: 'Get All Courses',
+      color: 'bg-blue-500',
+      url: '/admin/get-all-courses',
+    },
+    {
+      label: 'Delete Course',
+      color: 'bg-red-500',
+      url: '/admin/delete-course',
+    },
   ];
 
   return (
-    <div className="p-8 bg-gray-100 min-h-screen flex flex-col items-center text-gray-800">
+    <div className="p-8 bg-gray-50 min-h-screen flex flex-col items-center text-gray-800">
       <ToastContainer position="top-right" autoClose={3000} />
-      <h2 className="text-4xl font-bold mb-8 text-gray-700">Admin Dashboard</h2>
+      <h2 className="text-5xl font-bold mb-6 text-purple-600 text-center">Admin Dashboard</h2>
+      <p className="text-lg text-gray-600 mb-8 text-center">Manage and perform actions on courses and users</p>
 
-      <div className="w-full max-w-3xl space-y-6">
-        {/* Action Buttons */}
+      <div className="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {actions.map((action, index) => (
-          <div key={index} className="bg-white p-6 rounded-lg shadow-md flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-semibold mb-1">{action.label}</h3>
-              <p className="text-sm text-gray-500">Action: {action.method}</p>
+          <div key={index} className="bg-white p-5 rounded-lg shadow-md transition-transform transform hover:scale-105">
+            <div className="flex flex-col items-center space-y-4">
+              <h3 className="text-lg font-semibold text-gray-800 text-center">{action.label}</h3>
+              <Link href={action.url}>
+                <button
+                  onClick={() => apiCall(action.url, action.body)}
+                  className={`px-4 py-2 rounded-md text-white ${action.color}`}
+                >
+                  Execute
+                </button>
+              </Link>
             </div>
-            <button
-              onClick={() => {
-                handleButtonClick(action.label);
-                apiCall(action.url, action.method, action.body);
-              }}
-              className={`px-4 py-2 rounded-lg text-white ${action.color}`}
-            >
-              Execute
-            </button>
           </div>
         ))}
-
-        {/* Input Field */}
-        <div className="mt-6">
-          <h3 className="text-lg font-semibold mb-2">Input for Selected Action:</h3>
-          <input
-            type="text"
-            placeholder={inputType}
-            value={inputValue}
-            onChange={handleInputChange}
-            className="w-full p-3 border rounded-lg text-gray-700 focus:border-blue-500 focus:outline-none"
-          />
-        </div>
       </div>
     </div>
   );
