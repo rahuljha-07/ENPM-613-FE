@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { ToastContainer, toast } from 'react-toastify';
@@ -9,30 +8,24 @@ export default function CourseManagement() {
   const BASE_URL = process.env.NEXT_PUBLIC_ILIM_BE;
   const [courses, setCourses] = useState([]);
   const [filteredCourses, setFilteredCourses] = useState([]);
-  const [activeTab, setActiveTab] = useState("all"); // "all" or "waiting"
+  const [activeTab, setActiveTab] = useState("waiting"); // "waiting" or "approved"
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [confirmationModal, setConfirmationModal] = useState(null); // Modal state
 
   useEffect(() => {
     fetchCourses();
-  }, [activeTab]);
+  }, []);
 
   useEffect(() => {
-    // Filter courses based on search term
-    const lowercasedSearchTerm = searchTerm.toLowerCase();
-    const filtered = courses.filter(course =>
-      course.title.toLowerCase().includes(lowercasedSearchTerm)
-    );
-    setFilteredCourses(filtered);
-  }, [searchTerm, courses]);
+    filterCourses();
+  }, [activeTab, searchTerm, courses]);
 
   const getAccessToken = () => localStorage.getItem('accessToken');
 
   const fetchCourses = async () => {
     const token = getAccessToken();
-    const endpoint = activeTab === "all"
-      ? `${BASE_URL}/admin/course/all`
-      : `${BASE_URL}/admin/course/wait-for-approval`;
+    const endpoint = `${BASE_URL}/admin/course/all`;
 
     if (!BASE_URL || !token) {
       console.error("BASE_URL or token is not defined");
@@ -51,8 +44,8 @@ export default function CourseManagement() {
 
       const result = await response.json();
       if (response.ok) {
-        setCourses(result.body); // Update courses based on the response
-        setFilteredCourses(result.body); // Initialize filtered courses
+        const filtered = result.body.filter(course => !course.isDeleted);
+        setCourses(filtered); // Set courses excluding deleted ones
       } else {
         toast.error(`Error: ${result.message || 'Failed to load courses'}`);
       }
@@ -62,6 +55,25 @@ export default function CourseManagement() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const filterCourses = () => {
+    let filtered = courses;
+
+    if (activeTab === 'waiting') {
+      filtered = filtered.filter(course => course.status === 'WAIT_APPROVAL');
+    } else if (activeTab === 'approved') {
+      filtered = filtered.filter(course => course.status === 'PUBLISHED');
+    }
+
+    if (searchTerm) {
+      const lowercasedSearchTerm = searchTerm.toLowerCase();
+      filtered = filtered.filter(course =>
+        course.title.toLowerCase().includes(lowercasedSearchTerm)
+      );
+    }
+
+    setFilteredCourses(filtered);
   };
 
   const handleDeleteCourse = async (courseId) => {
@@ -87,19 +99,79 @@ export default function CourseManagement() {
     } catch (error) {
       toast.error('Failed to connect to the API');
       console.error(error);
+    } finally {
+      setConfirmationModal(null); // Close the modal
     }
   };
 
   const handleApproveCourse = async (courseId) => {
-    // Placeholder for approve course API call
-    toast.success(`Course approved!`);
-    fetchCourses();
+    const token = getAccessToken();
+    const endpoint = `${BASE_URL}/admin/approve-course/${courseId}`;
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        toast.success("Course approved successfully!");
+        fetchCourses();
+      } else {
+        const result = await response.json();
+        toast.error(`Error: ${result.message || 'Something went wrong'}`);
+      }
+    } catch (error) {
+      toast.error('Failed to connect to the API');
+      console.error(error);
+    } finally {
+      setConfirmationModal(null); // Close the modal
+    }
   };
 
   const handleRejectCourse = async (courseId) => {
-    // Placeholder for reject course API call
-    toast.success(`Course rejected!`);
-    fetchCourses();
+    const token = getAccessToken();
+    const endpoint = `${BASE_URL}/admin/reject-course/${courseId}`;
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        toast.success("Course rejected successfully!");
+        fetchCourses();
+      } else {
+        const result = await response.json();
+        toast.error(`Error: ${result.message || 'Something went wrong'}`);
+      }
+    } catch (error) {
+      toast.error('Failed to connect to the API');
+      console.error(error);
+    } finally {
+      setConfirmationModal(null); // Close the modal
+    }
+  };
+
+  const handleOpenModal = (action, courseId) => {
+    setConfirmationModal({ action, courseId });
+  };
+
+  const handleConfirmAction = () => {
+    if (confirmationModal.action === 'delete') {
+      handleDeleteCourse(confirmationModal.courseId);
+    } else if (confirmationModal.action === 'approve') {
+      handleApproveCourse(confirmationModal.courseId);
+    } else if (confirmationModal.action === 'reject') {
+      handleRejectCourse(confirmationModal.courseId);
+    }
   };
 
   return (
@@ -119,16 +191,6 @@ export default function CourseManagement() {
         <div className="flex space-x-4 mb-4">
           <button
             className={`px-6 py-2 font-semibold rounded-lg shadow-md transition duration-300 ${
-              activeTab === "all"
-                ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white"
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-            }`}
-            onClick={() => setActiveTab("all")}
-          >
-            All Courses
-          </button>
-          <button
-            className={`px-6 py-2 font-semibold rounded-lg shadow-md transition duration-300 ${
               activeTab === "waiting"
                 ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white"
                 : "bg-gray-200 text-gray-800 hover:bg-gray-300"
@@ -136,6 +198,16 @@ export default function CourseManagement() {
             onClick={() => setActiveTab("waiting")}
           >
             Waiting for Approval
+          </button>
+          <button
+            className={`px-6 py-2 font-semibold rounded-lg shadow-md transition duration-300 ${
+              activeTab === "approved"
+                ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white"
+                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+            }`}
+            onClick={() => setActiveTab("approved")}
+          >
+            Approved Courses
           </button>
         </div>
 
@@ -178,28 +250,29 @@ export default function CourseManagement() {
 
                   {/* Actions */}
                   <div className="flex items-center space-x-4">
-                    {activeTab === "all" ? (
-                      <button
-                        className="px-4 py-2 font-semibold text-white bg-red-500 hover:bg-red-600 rounded-full shadow-lg transition transform duration-300 hover:scale-105"
-                        onClick={() => handleDeleteCourse(course.id)}
-                      >
-                        Delete
-                      </button>
-                    ) : (
+                    {activeTab === "waiting" && (
                       <>
                         <button
                           className="px-4 py-2 font-semibold text-white bg-green-500 hover:bg-green-600 rounded-full shadow-lg transition transform duration-300 hover:scale-105"
-                          onClick={() => handleApproveCourse(course.id)}
+                          onClick={() => handleOpenModal('approve', course.id)}
                         >
                           Approve
                         </button>
                         <button
                           className="px-4 py-2 font-semibold text-white bg-red-500 hover:bg-red-600 rounded-full shadow-lg transition transform duration-300 hover:scale-105"
-                          onClick={() => handleRejectCourse(course.id)}
+                          onClick={() => handleOpenModal('reject', course.id)}
                         >
                           Reject
                         </button>
                       </>
+                    )}
+                    {activeTab === "approved" && (
+                      <button
+                        className="px-4 py-2 font-semibold text-white bg-red-500 hover:bg-red-600 rounded-full shadow-lg transition transform duration-300 hover:scale-105"
+                        onClick={() => handleOpenModal('delete', course.id)}
+                      >
+                        Delete
+                      </button>
                     )}
                   </div>
                 </div>
@@ -210,6 +283,31 @@ export default function CourseManagement() {
           </div>
         )}
       </div>
+
+      {/* Confirmation Modal */}
+      {confirmationModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+            <p className="text-lg font-semibold mb-4">
+              Are you sure you want to {confirmationModal.action} this course?
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                onClick={() => setConfirmationModal(null)}
+              >
+                Cancel
+              </button>
+              <button
+                className={`px-4 py-2 ${confirmationModal.action === 'delete' ? 'bg-red-500' : 'bg-green-500'} text-white rounded hover:opacity-90`}
+                onClick={handleConfirmAction}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

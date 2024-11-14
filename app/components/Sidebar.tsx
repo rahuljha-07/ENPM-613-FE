@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Home, Book, User, HelpCircle, Settings, LogOut, FileText, Upload, ChevronDown } from 'lucide-react';
+import { Home, Book, User, HelpCircle, Settings, LogOut, FileText, Upload, ChevronDown, UserPlus } from 'lucide-react';
 
 export default function Sidebar() {
   const router = useRouter();
@@ -47,7 +47,7 @@ export default function Sidebar() {
 
         {/* Admin dropdown options */}
         {isAdminOpen && (
-          <div className="mt-2 space-y-2 lg:pl-6"> {/* Adjusted to add padding instead of margin */}
+          <div className="mt-2 space-y-2 lg:pl-6">
             <DropdownItem href="/admin/instructor-management" label="Instructor Management" />
             <DropdownItem href="/admin/user-management" label="User Management" />
             <DropdownItem href="/admin/course-management" label="Course Management" />
@@ -57,6 +57,8 @@ export default function Sidebar() {
         <NavItem href="/support" label="Support" icon={<HelpCircle className="w-5 h-5 lg:w-6 lg:h-6" />} />
         <NavItem href="/about" label="About" icon={<FileText className="w-5 h-5 lg:w-6 lg:h-6" />} />
         <NavItem href="/settings" label="Settings" icon={<Settings className="w-5 h-5 lg:w-6 lg:h-6" />} />
+        
+        {/* Manage Courses dropdown */}
         <Button
           variant="ghost"
           onClick={toggleManageCourses}
@@ -73,7 +75,10 @@ export default function Sidebar() {
             <DropdownItem href="/manage-courses/upload-course" label="Upload Course" />
           </div>
         )}
-        
+
+        {/* Become Instructor item */}
+        <NavItem href="/instructor-application" label="Become Instructor" icon={<UserPlus className="w-5 h-5 lg:w-6 lg:h-6" />} />
+
         {/* Logout item with onClick handler */}
         <NavItem href="/" label="Logout" icon={<LogOut className="w-5 h-5 lg:w-6 lg:h-6" />} onClick={handleLogout} />
       </nav>

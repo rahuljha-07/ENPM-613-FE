@@ -30,7 +30,7 @@ export default function ApproveInstructorApplication() {
 
     try {
       setLoading(true); // Start loading
-      const response = await fetch(`${BASE_URL}/admin/user/all`, {
+      const response = await fetch(`${BASE_URL}/student/instructor-application/all`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -122,21 +122,29 @@ export default function ApproveInstructorApplication() {
               applications.map((application) => (
                 <div
                   key={application.id}
-                  className="flex items-center justify-between border border-gray-300 p-4 rounded-lg shadow-sm bg-white"
+                  className="flex flex-col border border-gray-300 p-4 rounded-lg shadow-sm bg-white space-y-4"
                 >
                   <div className="flex items-center space-x-4">
                     {/* Profile Image */}
                     <img
                       src={application.profileImageUrl || "/default-avatar.png"}
-                      alt={`${application.name}'s profile`}
+                      alt={`${application.userId}'s profile`}
                       className="w-12 h-12 rounded-full border"
                     />
 
                     {/* Name and Title */}
                     <div>
-                      <p className="text-lg font-semibold text-gray-900">{application.name}</p>
-                      <p className="text-sm text-gray-500">{application.title || 'Instructor Title'}</p>
+                      <p className="text-lg font-semibold text-gray-900">{application.instructorTitle}</p>
+                      <p className="text-sm text-gray-500">{application.professionalTitle}</p>
                     </div>
+                  </div>
+
+                  {/* Additional Information */}
+                  <div className="space-y-2">
+                    <p><strong>School:</strong> {application.schoolName}</p>
+                    <p><strong>Degree:</strong> {application.degreeTitle}</p>
+                    <p><strong>Experience:</strong> {application.experienceYears} years</p>
+                    <p><strong>Bio:</strong> {application.instructorBio}</p>
                   </div>
 
                   {/* Actions */}
