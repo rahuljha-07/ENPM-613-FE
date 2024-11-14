@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Toaster, toast } from 'react-hot-toast';
-import { uploadFileToS3 } from '../../../lib/s3'; // Import the S3 upload function
+import { uploadFileToS3 } from '../../../lib/s3';
 
 export default function EditCoursePage() {
   const router = useRouter();
@@ -30,15 +30,29 @@ export default function EditCoursePage() {
   const [moduleIdForVideo, setModuleIdForVideo] = useState(null);
   const [moduleIdForQuiz, setModuleIdForQuiz] = useState(null);
 
-  const [isUploading, setIsUploading] = useState(false); // State for upload loader
+  const [isUploading, setIsUploading] = useState(false);
 
-  // New state variables for deleting a video
   const [isDeleteVideoModalOpen, setIsDeleteVideoModalOpen] = useState(false);
   const [videoToDelete, setVideoToDelete] = useState(null);
 
+  const [isDeleteQuizModalOpen, setIsDeleteQuizModalOpen] = useState(false);
+  const [quizToDelete, setQuizToDelete] = useState(null);
+
+  const [quizTitle, setQuizTitle] = useState("");
+  const [quizDescription, setQuizDescription] = useState("");
+  const [passingScore, setPassingScore] = useState(0);
+  const [questions, setQuestions] = useState([]);
+  const [currentQuestion, setCurrentQuestion] = useState({
+    text: "",
+    type: "TRUE_FALSE",
+    points: 0,
+    options: [],
+  });
+  const [newOptionText, setNewOptionText] = useState("");
+  const [newOptionIsCorrect, setNewOptionIsCorrect] = useState(false);
+
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
-  // Fetch modules function
   const fetchModules = async () => {
     setIsLoading(true);
 
@@ -64,14 +78,12 @@ export default function EditCoursePage() {
     }
   };
 
-  // Fetch modules on component mount and when courseId or BASE_URL changes
   useEffect(() => {
     if (courseId) {
       fetchModules();
     }
   }, [courseId, BASE_URL]);
 
-  // Toggle expand/collapse for module description and items
   const toggleModuleExpansion = (moduleId) => {
     setExpandedModule((prev) => (prev === moduleId ? null : moduleId));
   };
@@ -111,7 +123,6 @@ export default function EditCoursePage() {
       if (response.ok) {
         toast.success("Module added successfully!");
         handleCloseModal();
-        // Fetch the updated modules list
         fetchModules();
       } else {
         toast.error("Failed to add module");
@@ -142,7 +153,6 @@ export default function EditCoursePage() {
         toast.success("Module deleted successfully!");
         setIsDeleteModalOpen(false);
         setModuleToDelete(null);
-        // Fetch the updated modules list
         fetchModules();
       } else {
         toast.error("Failed to delete module");
@@ -158,7 +168,6 @@ export default function EditCoursePage() {
     setModuleToDelete(null);
   };
 
-  // Handle Add Video
   const handleAddVideo = (moduleId) => {
     setModuleIdForVideo(moduleId);
     setIsAddVideoModalOpen(true);
@@ -173,7 +182,6 @@ export default function EditCoursePage() {
     setModuleIdForVideo(null);
   };
 
-  // Function to get video duration
   const getVideoDuration = (file) => {
     return new Promise((resolve, reject) => {
       const video = document.createElement('video');
@@ -182,7 +190,7 @@ export default function EditCoursePage() {
       video.onloadedmetadata = function () {
         window.URL.revokeObjectURL(video.src);
         const duration = video.duration;
-        resolve(Math.floor(duration)); // duration in seconds
+        resolve(Math.floor(duration));
       };
 
       video.onerror = function () {
@@ -202,22 +210,14 @@ export default function EditCoursePage() {
     setIsUploading(true);
 
     try {
-      // Create filenames
-      const videoExtension = videoFile.name.split('.').pop();
       const videofilename = `${courseId}-${moduleIdForVideo}-video-${videoFile.name}`;
-
       const transcriptFilename = `${courseId}-${moduleIdForVideo}-transcript-${transcriptFile.name}`;
 
-      // Upload video
       const videoUrl = await uploadFileToS3(videoFile, videofilename);
-
-      // Upload transcript
       const transcriptUrl = await uploadFileToS3(transcriptFile, transcriptFilename);
 
-      // Calculate video duration
       const durationInSeconds = await getVideoDuration(videoFile);
 
-      // Create payload
       const payload = {
         title: videoTitle,
         description: videoDescription,
@@ -226,7 +226,6 @@ export default function EditCoursePage() {
         transcriptUrl,
       };
 
-      // Send POST request
       const response = await fetch(`${BASE_URL}/instructor/module/${moduleIdForVideo}/add-video`, {
         method: "POST",
         headers: {
@@ -251,7 +250,6 @@ export default function EditCoursePage() {
     }
   };
 
-  // Handle Delete Video
   const handleDeleteVideo = (videoId) => {
     setVideoToDelete(videoId);
     setIsDeleteVideoModalOpen(true);
@@ -272,7 +270,6 @@ export default function EditCoursePage() {
         toast.success("Video deleted successfully!");
         setIsDeleteVideoModalOpen(false);
         setVideoToDelete(null);
-        // Fetch the updated modules list
         fetchModules();
       } else {
         toast.error("Failed to delete video");
@@ -288,15 +285,159 @@ export default function EditCoursePage() {
     setVideoToDelete(null);
   };
 
-  // Handle Add Quiz
   const handleAddQuiz = (moduleId) => {
     setModuleIdForQuiz(moduleId);
     setIsAddQuizModalOpen(true);
+    setQuizTitle("");
+    setQuizDescription("");
+    setPassingScore(0);
+    setQuestions([]);
+    setCurrentQuestion({
+      text: "",
+      type: "TRUE_FALSE",
+      points: 0,
+      options: [],
+    });
+    setNewOptionText("");
+    setNewOptionIsCorrect(false);
   };
 
   const handleCloseAddQuizModal = () => {
     setIsAddQuizModalOpen(false);
     setModuleIdForQuiz(null);
+  };
+
+  const handleAddQuestion = () => {
+    if (
+      !currentQuestion.text ||
+      currentQuestion.points <= 0 ||
+      currentQuestion.options.length === 0 ||
+      !currentQuestion.options.some((opt) => opt.isCorrect)
+    ) {
+      toast.error("Please complete the current question before adding a new one");
+      return;
+    }
+    setQuestions([...questions, currentQuestion]);
+    setCurrentQuestion({
+      text: "",
+      type: "TRUE_FALSE",
+      points: 0,
+      options: [],
+    });
+    setNewOptionText("");
+    setNewOptionIsCorrect(false);
+  };
+
+  const handleAddOption = (optionText, isCorrect) => {
+    setCurrentQuestion((prevQuestion) => ({
+      ...prevQuestion,
+      options: [...prevQuestion.options, { text: optionText, isCorrect }],
+    }));
+  };
+
+  const handleOptionChange = (optionIndex, isCorrect) => {
+    setCurrentQuestion((prevQuestion) => ({
+      ...prevQuestion,
+      options: prevQuestion.options.map((opt, idx) => {
+        if (idx === optionIndex) {
+          return { ...opt, isCorrect };
+        } else if (currentQuestion.type === 'TRUE_FALSE') {
+          return { ...opt, isCorrect: false };
+        } else {
+          return opt;
+        }
+      }),
+    }));
+  };
+
+  useEffect(() => {
+    if (currentQuestion.type === 'TRUE_FALSE') {
+      setCurrentQuestion((prevQuestion) => ({
+        ...prevQuestion,
+        options: [
+          { text: 'True', isCorrect: false },
+          { text: 'False', isCorrect: false },
+        ],
+      }));
+    } else {
+      setCurrentQuestion((prevQuestion) => ({
+        ...prevQuestion,
+        options: [],
+      }));
+    }
+    setNewOptionText("");
+    setNewOptionIsCorrect(false);
+  }, [currentQuestion.type]);
+
+  const handleSubmitQuiz = async () => {
+    if (!quizTitle || !quizDescription || passingScore <= 0 || questions.length === 0) {
+      toast.error("Please complete all quiz fields");
+      return;
+    }
+
+    const payload = {
+      title: quizTitle,
+      description: quizDescription,
+      passingScore,
+      questions,
+    };
+
+    try {
+      const response = await fetch(`${BASE_URL}/instructor/module/${moduleIdForQuiz}/add-quiz`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        toast.success("Quiz added successfully!");
+        handleCloseAddQuizModal();
+        fetchModules();
+      } else {
+        toast.error("Failed to add quiz");
+      }
+    } catch (error) {
+      console.error("Error adding quiz:", error);
+      toast.error("An error occurred while adding the quiz");
+    }
+  };
+
+  const handleDeleteQuiz = (quizId) => {
+    setQuizToDelete(quizId);
+    setIsDeleteQuizModalOpen(true);
+  };
+
+  const confirmDeleteQuiz = async () => {
+    if (!quizToDelete) return;
+
+    try {
+      const response = await fetch(`${BASE_URL}/instructor/delete-quiz/${quizToDelete}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        toast.success("Quiz deleted successfully!");
+        setIsDeleteQuizModalOpen(false);
+        setQuizToDelete(null);
+        fetchModules();
+      } else {
+        toast.error("Failed to delete quiz");
+      }
+    } catch (error) {
+      console.error("Error deleting quiz:", error);
+      toast.error("An error occurred while deleting the quiz");
+    }
+  };
+
+  const cancelDeleteQuiz = () => {
+    setIsDeleteQuizModalOpen(false);
+    setQuizToDelete(null);
   };
 
   return (
@@ -370,7 +511,6 @@ export default function EditCoursePage() {
                 {expandedModule === module.id && (
                   <div className="pl-4 text-gray-600">
                     <p className="mb-4">{module.description}</p>
-                    {/* Display module items */}
                     {module.moduleItems && module.moduleItems.length > 0 ? (
                       <div className="space-y-2">
                         {module.moduleItems.map((item) => (
@@ -399,8 +539,21 @@ export default function EditCoursePage() {
                             )}
                             {item.itemType === 'QUIZ' && item.quiz && (
                               <div>
-                                <h4 className="font-semibold text-md">{item.quiz.title}</h4>
-                                {/* Display quiz details */}
+                                <div className="flex justify-between items-center">
+                                  <div>
+                                    <h4 className="font-semibold text-md">{item.quiz.title}</h4>
+                                    <p className="text-sm">{item.quiz.description}</p>
+                                    <p className="text-sm text-gray-500">
+                                      Passing Score: {item.quiz.passingScore}
+                                    </p>
+                                  </div>
+                                  <button
+                                    className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition duration-300"
+                                    onClick={() => handleDeleteQuiz(item.quiz.id)}
+                                  >
+                                    Delete Quiz
+                                  </button>
+                                </div>
                               </div>
                             )}
                           </div>
@@ -511,6 +664,30 @@ export default function EditCoursePage() {
           </div>
         )}
 
+        {/* Modal for confirming quiz deletion */}
+        {isDeleteQuizModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+              <h2 className="text-2xl font-bold mb-4">Confirm Deletion</h2>
+              <p className="mb-4">Are you sure you want to delete this quiz?</p>
+              <div className="flex justify-end space-x-4">
+                <button
+                  onClick={cancelDeleteQuiz}
+                  className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDeleteQuiz}
+                  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Modal for adding a video */}
         {isAddVideoModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
@@ -574,7 +751,6 @@ export default function EditCoursePage() {
                   {isUploading ? 'Uploading...' : 'Submit'}
                 </button>
               </div>
-              {/* Loader */}
               {isUploading && (
                 <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-30">
                   <div className="w-12 h-12 border-4 border-blue-600 border-dotted rounded-full animate-spin"></div>
@@ -586,17 +762,180 @@ export default function EditCoursePage() {
 
         {/* Modal for adding a quiz */}
         {isAddQuizModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20 overflow-y-auto">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full">
               <h2 className="text-2xl font-bold mb-4">Add Quiz</h2>
-              {/* Empty modal as per instruction */}
-              <div className="flex justify-end space-x-4">
+              {/* Quiz Details */}
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Quiz Title</label>
+                <input
+                  type="text"
+                  value={quizTitle}
+                  onChange={(e) => setQuizTitle(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Quiz Description</label>
+                <textarea
+                  value={quizDescription}
+                  onChange={(e) => setQuizDescription(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg p-2 h-24"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Passing Score</label>
+                <input
+                  type="number"
+                  value={passingScore}
+                  onChange={(e) => setPassingScore(parseInt(e.target.value))}
+                  className="w-full border border-gray-300 rounded-lg p-2"
+                />
+              </div>
+
+              {/* Questions List */}
+              {questions.map((question, index) => (
+                <div key={index} className="border border-gray-300 rounded-lg p-4 mb-4">
+                  <h4 className="font-semibold">Question {index + 1}</h4>
+                  <p>{question.text}</p>
+                  <p>Type: {question.type}</p>
+                  <p>Points: {question.points}</p>
+                  <ul className="list-disc pl-5">
+                    {question.options.map((option, idx) => (
+                      <li key={idx}>
+                        {option.text} {option.isCorrect && "(Correct)"}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+
+              {/* Add New Question */}
+              <div className="border border-gray-300 rounded-lg p-4 mb-4">
+                <h4 className="font-semibold mb-2">Add Question</h4>
+                <div className="mb-2">
+                  <label className="block text-gray-700 mb-1">Question Text</label>
+                  <input
+                    type="text"
+                    value={currentQuestion.text}
+                    onChange={(e) =>
+                      setCurrentQuestion({ ...currentQuestion, text: e.target.value })
+                    }
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                  />
+                </div>
+                <div className="mb-2">
+                  <label className="block text-gray-700 mb-1">Question Type</label>
+                  <select
+                    value={currentQuestion.type}
+                    onChange={(e) =>
+                      setCurrentQuestion({ ...currentQuestion, type: e.target.value })
+                    }
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                  >
+                    <option value="TRUE_FALSE">True/False</option>
+                    <option value="MULTIPLE_CHOICE">Multiple Choice</option>
+                  </select>
+                </div>
+                <div className="mb-2">
+                  <label className="block text-gray-700 mb-1">Points</label>
+                  <input
+                    type="number"
+                    value={currentQuestion.points}
+                    onChange={(e) =>
+                      setCurrentQuestion({
+                        ...currentQuestion,
+                        points: parseInt(e.target.value),
+                      })
+                    }
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                  />
+                </div>
+
+                {/* Options */}
+                <div className="mb-2">
+                  <label className="block text-gray-700 mb-1">Options</label>
+                  {currentQuestion.options.map((option, idx) => (
+                    <div key={idx} className="flex items-center mb-1">
+                      <input
+                        type="text"
+                        value={option.text}
+                        readOnly
+                        className="w-full border border-gray-300 rounded-lg p-2 mr-2"
+                      />
+                      <label className="flex items-center">
+                        <input
+                          type={currentQuestion.type === 'TRUE_FALSE' ? 'radio' : 'checkbox'}
+                          name={currentQuestion.type === 'TRUE_FALSE' ? 'tfOption' : undefined}
+                          checked={option.isCorrect}
+                          onChange={() => handleOptionChange(idx, !option.isCorrect)}
+                          className="mr-1"
+                        />
+                        Correct
+                      </label>
+                    </div>
+                  ))}
+                  {/* Add Option (only for Multiple Choice) */}
+                  {currentQuestion.type === 'MULTIPLE_CHOICE' && (
+                    <>
+                      <div className="flex items-center mb-1">
+                        <input
+                          type="text"
+                          placeholder="Option Text"
+                          value={newOptionText}
+                          onChange={(e) => setNewOptionText(e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg p-2 mr-2"
+                        />
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={newOptionIsCorrect}
+                            onChange={(e) => setNewOptionIsCorrect(e.target.checked)}
+                            className="mr-1"
+                          />
+                          Correct
+                        </label>
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (!newOptionText) {
+                            toast.error("Option text cannot be empty");
+                            return;
+                          }
+                          handleAddOption(newOptionText, newOptionIsCorrect);
+                          setNewOptionText("");
+                          setNewOptionIsCorrect(false);
+                        }}
+                        className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition duration-300 mt-2"
+                      >
+                        Add Option
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-between">
                 <button
-                  onClick={handleCloseAddQuizModal}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                  onClick={handleAddQuestion}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                 >
-                  Close
+                  Add Question
                 </button>
+                <div className="flex space-x-4">
+                  <button
+                    onClick={handleCloseAddQuizModal}
+                    className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSubmitQuiz}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                  >
+                    Submit Quiz
+                  </button>
+                </div>
               </div>
             </div>
           </div>
