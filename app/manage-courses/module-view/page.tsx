@@ -455,9 +455,6 @@ export default function EditCoursePage() {
           >
             ← Back
           </button>
-          <button className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800">
-            Edit Course Information
-          </button>
         </div>
 
         <h1 className="text-3xl font-bold mb-4">Edit Course</h1>
