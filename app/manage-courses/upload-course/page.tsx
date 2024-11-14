@@ -16,6 +16,8 @@ export default function UploadCoursePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showTOS, setShowTOS] = useState(false);
 
+  const BASE_URL = process.env.NEXT_PUBLIC_ILIM_BE;
+  
   const handleThumbnailChange = (e) => {
     if (e.target.files.length > 0) {
       setThumbnail(e.target.files[0]);
@@ -61,21 +63,20 @@ export default function UploadCoursePage() {
         thumbnailUrl = await uploadThumbnailToS3(thumbnail);
       }
 
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('description', description);
-      formData.append('price', price);
-      console.log(thumbnailUrl);
-      if (thumbnailUrl) {
-        formData.append('thumbnailUrl', thumbnailUrl);
-      }
+      const payload = {
+        title,
+        description,
+        price,
+        thumbnailUrl,
+      };
 
-      const response = await fetch('/instructor/create-course', {
+      const response = await fetch(`${BASE_URL}/instructor/create-course`, {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: formData,
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -85,7 +86,7 @@ export default function UploadCoursePage() {
         setPrice('');
         setThumbnail(null);
         setAgreeToTerms(false);
-        router.push('/course-management');
+        router.push('manage-courses/course-management');
       } else {
         const errorData = await response.json();
         toast.error(`Failed to create course: ${errorData.message}`);
