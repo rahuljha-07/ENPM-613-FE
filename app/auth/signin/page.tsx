@@ -97,7 +97,7 @@ export default function SignIn() {
         router.push('/course-details');
       } else {
         const errorData = await response.json();
-        const errMsg= errorData.body.split('.')[0];
+        const errMsg = errorData.body.split('.')[0];
         toast.error(errMsg || 'Sign-in failed');
       }
     } catch (error) {
@@ -107,75 +107,98 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-bold text-center mb-6">Sign In</h2>
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Email Field */}
-          <div>
-            <label htmlFor="email" className="block text-gray-700">Email</label>
-            <input
-              type="email"
-              id="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
+    <div className="flex min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
 
-          {/* Password Field */}
-          <div>
-            <label htmlFor="password" className="block text-gray-700">Password</label>
-            <div className="relative">
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        {/* Form Container */}
+        <div className="w-full max-w-md bg-white text-gray-800 rounded-lg shadow-lg p-6">
+          <h2 className="text-2xl font-bold text-center mb-6">Sign In</h2>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            {/* Email Field */}
+            <div>
+              <label htmlFor="email" className="block text-gray-700 font-semibold mb-2">
+                Email <span className="text-red-500">*</span>
+              </label>
               <input
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                value={formData.password}
+                type="email"
+                id="email"
+                value={formData.email}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-                placeholder="Enter your password"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                placeholder="Enter your email"
                 required
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-500"
-              >
-                {showPassword ? (
-                  <EyeSlashIcon className="w-5 h-5" aria-hidden="true" />
-                ) : (
-                  <EyeIcon className="w-5 h-5" aria-hidden="true" />
-                )}
-              </button>
             </div>
-          </div>
 
-          {/* Forgot Password Link */}
-          <div className="text-right">
-            <a href="/auth/forgot-password" className="text-blue-500 hover:underline text-sm">
-              Forgot Password?
+            {/* Password Field */}
+            <div>
+              <label htmlFor="password" className="block text-gray-700 font-semibold mb-2">
+                Password <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  placeholder="Enter your password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-3 flex items-center text-gray-500 focus:outline-none"
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className="w-5 h-5" aria-hidden="true" />
+                  ) : (
+                    <EyeIcon className="w-5 h-5" aria-hidden="true" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Forgot Password Link */}
+            <div className="text-right">
+              <a href="/auth/forgot-password" className="text-blue-500 hover:underline text-sm">
+                Forgot Password?
+              </a>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors font-semibold flex items-center justify-center"
+            >
+              {/* Optionally, you can add a spinner here when submitting.
+                  For simplicity, it's not included in this version. */}
+              Sign In
+            </button>
+          </form>
+
+          {/* Sign Up Link */}
+          <p className="text-center text-gray-600 mt-4">
+            Don’t have an account?{' '}
+            <a href="/auth/signup" className="text-blue-500 hover:underline">
+              Sign Up
             </a>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            Sign In
-          </button>
-        </form>
-
-        {/* Sign Up Link */}
-        <p className="text-center text-gray-600 mt-4">
-          Don’t have an account?{' '}
-          <a href="/auth/signup" className="text-blue-500 hover:underline">
-            Sign Up
-          </a>
-        </p>
+          </p>
+        </div>
       </div>
     </div>
   );

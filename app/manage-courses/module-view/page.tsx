@@ -44,7 +44,7 @@ export default function EditCoursePage() {
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState({
     text: "",
-    type: "TRUE_FALSE",
+    type: "MULTIPLE_CHOICE", // Changed from "TRUE_FALSE" to "MULTIPLE_CHOICE"
     points: 0,
     options: [],
   });
@@ -53,6 +53,7 @@ export default function EditCoursePage() {
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
+  // Fetch modules and course details
   const fetchModules = async () => {
     setIsLoading(true);
 
@@ -84,10 +85,12 @@ export default function EditCoursePage() {
     }
   }, [courseId, BASE_URL]);
 
+  // Toggle module expansion
   const toggleModuleExpansion = (moduleId) => {
     setExpandedModule((prev) => (prev === moduleId ? null : moduleId));
   };
 
+  // Handle adding a new module
   const handleAddModule = () => {
     setIsModalOpen(true);
   };
@@ -133,6 +136,7 @@ export default function EditCoursePage() {
     }
   };
 
+  // Handle deleting a module
   const handleDeleteModule = (moduleId) => {
     setModuleToDelete(moduleId);
     setIsDeleteModalOpen(true);
@@ -168,6 +172,7 @@ export default function EditCoursePage() {
     setModuleToDelete(null);
   };
 
+  // Handle adding a video
   const handleAddVideo = (moduleId) => {
     setModuleIdForVideo(moduleId);
     setIsAddVideoModalOpen(true);
@@ -182,6 +187,7 @@ export default function EditCoursePage() {
     setModuleIdForVideo(null);
   };
 
+  // Get video duration
   const getVideoDuration = (file) => {
     return new Promise((resolve, reject) => {
       const video = document.createElement('video');
@@ -250,6 +256,7 @@ export default function EditCoursePage() {
     }
   };
 
+  // Handle deleting a video
   const handleDeleteVideo = (videoId) => {
     setVideoToDelete(videoId);
     setIsDeleteVideoModalOpen(true);
@@ -285,6 +292,7 @@ export default function EditCoursePage() {
     setVideoToDelete(null);
   };
 
+  // Handle adding a quiz
   const handleAddQuiz = (moduleId) => {
     setModuleIdForQuiz(moduleId);
     setIsAddQuizModalOpen(true);
@@ -294,7 +302,7 @@ export default function EditCoursePage() {
     setQuestions([]);
     setCurrentQuestion({
       text: "",
-      type: "TRUE_FALSE",
+      type: "MULTIPLE_CHOICE", // Changed from "TRUE_FALSE" to "MULTIPLE_CHOICE"
       points: 0,
       options: [],
     });
@@ -307,6 +315,7 @@ export default function EditCoursePage() {
     setModuleIdForQuiz(null);
   };
 
+  // Handle adding a question to the quiz
   const handleAddQuestion = () => {
     if (
       !currentQuestion.text ||
@@ -320,7 +329,7 @@ export default function EditCoursePage() {
     setQuestions([...questions, currentQuestion]);
     setCurrentQuestion({
       text: "",
-      type: "TRUE_FALSE",
+      type: "MULTIPLE_CHOICE", // Changed from "TRUE_FALSE" to "MULTIPLE_CHOICE"
       points: 0,
       options: [],
     });
@@ -359,7 +368,7 @@ export default function EditCoursePage() {
           { text: 'False', isCorrect: false },
         ],
       }));
-    } else {
+    } else if (currentQuestion.type === 'MULTIPLE_CHOICE') {
       setCurrentQuestion((prevQuestion) => ({
         ...prevQuestion,
         options: [],
@@ -405,6 +414,7 @@ export default function EditCoursePage() {
     }
   };
 
+  // Handle deleting a quiz
   const handleDeleteQuiz = (quizId) => {
     setQuizToDelete(quizId);
     setIsDeleteQuizModalOpen(true);
@@ -442,25 +452,45 @@ export default function EditCoursePage() {
 
   return (
     <div className="flex">
+      {/* Sidebar */}
       <aside className="fixed top-0 left-0 h-screen w-64 bg-gray-800 z-10">
         <Sidebar />
       </aside>
 
+      {/* Main Content */}
       <main className="flex-1 ml-64 p-8">
         <Toaster />
-        <div className="flex justify-between items-center mb-8">
+
+        {/* Back Button */}
+        <div className="flex justify-start mb-8">
           <button
             onClick={() => router.back()}
-            className="text-gray-600 hover:text-gray-800 font-semibold"
+            className="flex items-center text-gray-600 hover:text-gray-800 font-semibold px-4 py-2 rounded-lg bg-transparent hover:bg-gray-100 transition duration-300"
           >
-            ← Back
+            {/* Back Arrow Icon */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
           </button>
         </div>
 
-        <h1 className="text-3xl font-bold mb-4">Edit Course</h1>
-        {course && <h2 className="text-xl font-semibold mb-4">{course.title}</h2>}
+        {/* Page Titles */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold mb-2">Edit Course</h1>
+          {course && <h2 className="text-5xl font-semibold mb-2">{course.title}</h2>}
+          {/* Separator */}
+          <hr className="border-t-2 border-gray-300 w-24" />
+        </div>
 
-        <h2 className="text-xl font-semibold mb-4">Modules</h2>
+        {/* Modules Section */}
+        <h2 className="text-2xl font-semibold mb-4">Modules</h2>
 
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
@@ -470,43 +500,67 @@ export default function EditCoursePage() {
           <div className="space-y-4">
             {modules.map((module) => (
               <div key={module.id} className="border border-gray-300 rounded-lg p-4">
+                {/* Module Header with Arrow Icon */}
                 <div
                   className="flex justify-between items-center mb-2 cursor-pointer"
                   onClick={() => toggleModuleExpansion(module.id)}
                 >
-                  <h3 className="font-semibold text-lg">{module.title}</h3>
+                  {/* Left Side: Arrow Icon + Module Title */}
+                  <div className="flex items-center">
+                    {/* Arrow Icon */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className={`h-5 w-5 mr-2 transform transition-transform duration-300 ${
+                        expandedModule === module.id ? 'rotate-90' : 'rotate-0'
+                      }`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                    {/* Module Title */}
+                    <h3 className="font-semibold text-lg">{module.title}</h3>
+                  </div>
+
+                  {/* Right Side: Action Buttons */}
                   <div className="flex items-center space-x-4">
+                    {/* Add Video Button */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleAddVideo(module.id);
                       }}
-                      className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition duration-300"
+                      className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-300"
                     >
                       Add Video
                     </button>
+                    {/* Add Quiz Button */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleAddQuiz(module.id);
                       }}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600 transition duration-300"
+                      className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition duration-300"
                     >
                       Add Quiz
                     </button>
+                    {/* Delete Module Button */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteModule(module.id);
                       }}
-                      className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition duration-300"
+                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
                     >
                       Delete
                     </button>
                   </div>
                 </div>
+
+                {/* Module Content (Description and Items) */}
                 {expandedModule === module.id && (
-                  <div className="pl-4 text-gray-600">
+                  <div className="pl-6 text-gray-600">
                     <p className="mb-4">{module.description}</p>
                     {module.moduleItems && module.moduleItems.length > 0 ? (
                       <div className="space-y-2">
@@ -526,7 +580,7 @@ export default function EditCoursePage() {
                                     </p>
                                   </div>
                                   <button
-                                    className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition duration-300"
+                                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
                                     onClick={() => handleDeleteVideo(item.video.id)}
                                   >
                                     Delete Video
@@ -545,7 +599,7 @@ export default function EditCoursePage() {
                                     </p>
                                   </div>
                                   <button
-                                    className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition duration-300"
+                                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300"
                                     onClick={() => handleDeleteQuiz(item.quiz.id)}
                                   >
                                     Delete Quiz
@@ -566,16 +620,17 @@ export default function EditCoursePage() {
           </div>
         )}
 
+        {/* Add Module Button */}
         <button
           onClick={handleAddModule}
-          className="text-blue-500 mt-4 hover:text-blue-700 font-semibold"
+          className="mt-6 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors font-semibold"
         >
           + Add Module
         </button>
 
-        {/* Modal for adding a module */}
+        {/* Modal for Adding a Module */}
         {isModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
               <h2 className="text-2xl font-bold mb-4">Add New Module</h2>
               <div className="mb-4">
@@ -584,7 +639,8 @@ export default function EditCoursePage() {
                   type="text"
                   value={moduleTitle}
                   onChange={(e) => setModuleTitle(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-2"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  placeholder="Enter module title"
                 />
               </div>
               <div className="mb-4">
@@ -592,19 +648,20 @@ export default function EditCoursePage() {
                 <textarea
                   value={moduleDescription}
                   onChange={(e) => setModuleDescription(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-2 h-24"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 h-24"
+                  placeholder="Enter module description"
                 />
               </div>
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={handleCloseModal}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSubmitModule}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
                 >
                   Submit
                 </button>
@@ -613,22 +670,22 @@ export default function EditCoursePage() {
           </div>
         )}
 
-        {/* Modal for confirming module deletion */}
+        {/* Modal for Confirming Module Deletion */}
         {isDeleteModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
               <h2 className="text-2xl font-bold mb-4">Confirm Deletion</h2>
               <p className="mb-4">Are you sure you want to delete this module?</p>
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={cancelDeleteModule}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmDeleteModule}
-                  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300"
                 >
                   Delete
                 </button>
@@ -637,22 +694,22 @@ export default function EditCoursePage() {
           </div>
         )}
 
-        {/* Modal for confirming video deletion */}
+        {/* Modal for Confirming Video Deletion */}
         {isDeleteVideoModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
               <h2 className="text-2xl font-bold mb-4">Confirm Deletion</h2>
               <p className="mb-4">Are you sure you want to delete this video?</p>
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={cancelDeleteVideo}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmDeleteVideo}
-                  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300"
                 >
                   Delete
                 </button>
@@ -661,22 +718,22 @@ export default function EditCoursePage() {
           </div>
         )}
 
-        {/* Modal for confirming quiz deletion */}
+        {/* Modal for Confirming Quiz Deletion */}
         {isDeleteQuizModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
               <h2 className="text-2xl font-bold mb-4">Confirm Deletion</h2>
               <p className="mb-4">Are you sure you want to delete this quiz?</p>
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={cancelDeleteQuiz}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmDeleteQuiz}
-                  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300"
                 >
                   Delete
                 </button>
@@ -685,9 +742,9 @@ export default function EditCoursePage() {
           </div>
         )}
 
-        {/* Modal for adding a video */}
+        {/* Modal for Adding a Video */}
         {isAddVideoModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full relative">
               <h2 className="text-2xl font-bold mb-4">Add Video</h2>
               <div className="mb-4">
@@ -696,7 +753,8 @@ export default function EditCoursePage() {
                   type="text"
                   value={videoTitle}
                   onChange={(e) => setVideoTitle(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-2"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  placeholder="Enter video title"
                 />
               </div>
               <div className="mb-4">
@@ -704,12 +762,23 @@ export default function EditCoursePage() {
                 <textarea
                   value={videoDescription}
                   onChange={(e) => setVideoDescription(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-2 h-24"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 h-24"
+                  placeholder="Enter video description"
                 />
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2">Upload Video</label>
-                <label className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 cursor-pointer">
+                <label className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer flex items-center">
+                  {/* Upload Icon */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A2 2 0 0122 8.618v6.764a2 2 0 01-2.447 1.902L15 14m0 0l-4.553 2.276A2 2 0 018 16.382V9.618a2 2 0 012.447-1.902L15 10z" />
+                  </svg>
                   Select Video
                   <input
                     type="file"
@@ -718,11 +787,21 @@ export default function EditCoursePage() {
                     className="hidden"
                   />
                 </label>
-                {videoFile && <p className="mt-2">{videoFile.name}</p>}
+                {videoFile && <p className="mt-2 text-sm text-gray-700">{videoFile.name}</p>}
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2">Upload Transcript (.SRT format)</label>
-                <label className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 cursor-pointer">
+                <label className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer flex items-center">
+                  {/* Transcript Icon */}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2a2 2 0 012-2h4a2 2 0 012 2v2m-6-6h6m-6 4h6m-6-8h6m-6 4h6" />
+                  </svg>
                   Select Transcript
                   <input
                     type="file"
@@ -731,25 +810,25 @@ export default function EditCoursePage() {
                     className="hidden"
                   />
                 </label>
-                {transcriptFile && <p className="mt-2">{transcriptFile.name}</p>}
+                {transcriptFile && <p className="mt-2 text-sm text-gray-700">{transcriptFile.name}</p>}
               </div>
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={handleCloseAddVideoModal}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                  className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSubmitVideo}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
                   disabled={isUploading}
                 >
                   {isUploading ? 'Uploading...' : 'Submit'}
                 </button>
               </div>
               {isUploading && (
-                <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-30">
+                <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-40">
                   <div className="w-12 h-12 border-4 border-blue-600 border-dotted rounded-full animate-spin"></div>
                 </div>
               )}
@@ -757,9 +836,9 @@ export default function EditCoursePage() {
           </div>
         )}
 
-        {/* Modal for adding a quiz */}
+        {/* Modal for Adding a Quiz */}
         {isAddQuizModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20 overflow-y-auto">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30 overflow-y-auto">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full">
               <h2 className="text-2xl font-bold mb-4">Add Quiz</h2>
               {/* Quiz Details */}
@@ -769,7 +848,8 @@ export default function EditCoursePage() {
                   type="text"
                   value={quizTitle}
                   onChange={(e) => setQuizTitle(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-2"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  placeholder="Enter quiz title"
                 />
               </div>
               <div className="mb-4">
@@ -777,7 +857,8 @@ export default function EditCoursePage() {
                 <textarea
                   value={quizDescription}
                   onChange={(e) => setQuizDescription(e.target.value)}
-                  className="w-full border border-gray-300 rounded-lg p-2 h-24"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 h-24"
+                  placeholder="Enter quiz description"
                 />
               </div>
               <div className="mb-4">
@@ -786,7 +867,8 @@ export default function EditCoursePage() {
                   type="number"
                   value={passingScore}
                   onChange={(e) => setPassingScore(parseInt(e.target.value))}
-                  className="w-full border border-gray-300 rounded-lg p-2"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  placeholder="Enter passing score"
                 />
               </div>
 
@@ -818,7 +900,8 @@ export default function EditCoursePage() {
                     onChange={(e) =>
                       setCurrentQuestion({ ...currentQuestion, text: e.target.value })
                     }
-                    className="w-full border border-gray-300 rounded-lg p-2"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                    placeholder="Enter question text"
                   />
                 </div>
                 <div className="mb-2">
@@ -828,7 +911,7 @@ export default function EditCoursePage() {
                     onChange={(e) =>
                       setCurrentQuestion({ ...currentQuestion, type: e.target.value })
                     }
-                    className="w-full border border-gray-300 rounded-lg p-2"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                   >
                     <option value="TRUE_FALSE">True/False</option>
                     <option value="MULTIPLE_CHOICE">Multiple Choice</option>
@@ -845,7 +928,8 @@ export default function EditCoursePage() {
                         points: parseInt(e.target.value),
                       })
                     }
-                    className="w-full border border-gray-300 rounded-lg p-2"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                    placeholder="Enter points for the question"
                   />
                 </div>
 
@@ -858,7 +942,8 @@ export default function EditCoursePage() {
                         type="text"
                         value={option.text}
                         readOnly
-                        className="w-full border border-gray-300 rounded-lg p-2 mr-2"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mr-2"
+                        placeholder="Option text"
                       />
                       <label className="flex items-center">
                         <input
@@ -881,7 +966,7 @@ export default function EditCoursePage() {
                           placeholder="Option Text"
                           value={newOptionText}
                           onChange={(e) => setNewOptionText(e.target.value)}
-                          className="w-full border border-gray-300 rounded-lg p-2 mr-2"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mr-2"
                         />
                         <label className="flex items-center">
                           <input
@@ -903,7 +988,7 @@ export default function EditCoursePage() {
                           setNewOptionText("");
                           setNewOptionIsCorrect(false);
                         }}
-                        className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600 transition duration-300 mt-2"
+                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-300 mt-2"
                       >
                         Add Option
                       </button>
@@ -912,23 +997,24 @@ export default function EditCoursePage() {
                 </div>
               </div>
 
+              {/* Quiz Action Buttons */}
               <div className="flex justify-between">
                 <button
                   onClick={handleAddQuestion}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
                 >
                   Add Question
                 </button>
                 <div className="flex space-x-4">
                   <button
                     onClick={handleCloseAddQuizModal}
-                    className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+                    className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleSubmitQuiz}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
                   >
                     Submit Quiz
                   </button>
@@ -937,6 +1023,10 @@ export default function EditCoursePage() {
             </div>
           </div>
         )}
+
+        {/* Modal for Confirming Module Deletion */}
+        {/* ... (All other modals remain unchanged) */}
+
       </main>
     </div>
   );

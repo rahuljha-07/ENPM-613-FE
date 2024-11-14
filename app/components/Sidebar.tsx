@@ -22,7 +22,7 @@ export default function Sidebar() {
   const toggleManageCourses = () => setIsManageCoursesOpen((prev) => !prev);
 
   return (
-    <div className="w-20 lg:w-60 h-screen bg-gradient-to-br from-gray-800 to-gray-900 text-white flex flex-col items-center lg:items-start p-4">
+    <div className="w-20 lg:w-60 h-screen fixed top-0 left-0 bg-gradient-to-br from-gray-800 to-gray-900 text-white flex flex-col items-center lg:items-start p-4 overflow-y-auto">
       {/* Logo */}
       <div className="text-2xl font-extrabold mb-10 lg:ml-2 text-center lg:text-left text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
         iLIM
