@@ -47,6 +47,7 @@ export default function SignIn() {
         }
   
         // Store user data in local storage
+        localStorage.setItem('id', userData.body.id);
         localStorage.setItem('name', userData.body.name);
         localStorage.setItem('email', userData.body.email);
         localStorage.setItem('birthdate', formattedBirthdate); // Store formatted birthdate

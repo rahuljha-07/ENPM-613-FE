@@ -4,6 +4,7 @@ import Sidebar from '../../components/Sidebar';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { XMarkIcon } from '@heroicons/react/24/solid';
+import { uploadFileToS3 } from '../../../lib/s3'; // Import the S3 upload function
 
 export default function UploadCoursePage() {
   const router = useRouter();
@@ -11,7 +12,6 @@ export default function UploadCoursePage() {
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [thumbnail, setThumbnail] = useState(null);
-  const [transcript, setTranscript] = useState(null);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showTOS, setShowTOS] = useState(false);
@@ -22,9 +22,17 @@ export default function UploadCoursePage() {
     }
   };
 
-  const handleTranscriptChange = (e) => {
-    if (e.target.files.length > 0) {
-      setTranscript(e.target.files[0]);
+  const uploadThumbnailToS3 = async (file) => {
+    const id = localStorage.getItem('id');
+    const extension = file.name.split('.').pop();
+    const fileName = `${id}-${title}-thumbnail.${extension}`;
+
+    try {
+      const fileUrl = await uploadFileToS3(file, fileName);
+      return fileUrl;
+    } catch (error) {
+      console.error("Error uploading thumbnail to S3:", error);
+      throw new Error("Failed to upload thumbnail");
     }
   };
 
@@ -48,15 +56,18 @@ export default function UploadCoursePage() {
     }
 
     try {
+      let thumbnailUrl = '';
+      if (thumbnail) {
+        thumbnailUrl = await uploadThumbnailToS3(thumbnail);
+      }
+
       const formData = new FormData();
       formData.append('title', title);
       formData.append('description', description);
       formData.append('price', price);
-      if (thumbnail) {
-        formData.append('thumbnailUrl', thumbnail);
-      }
-      if (transcript) {
-        formData.append('transcriptUrl', transcript);
+      console.log(thumbnailUrl);
+      if (thumbnailUrl) {
+        formData.append('thumbnailUrl', thumbnailUrl);
       }
 
       const response = await fetch('/instructor/create-course', {
@@ -73,7 +84,6 @@ export default function UploadCoursePage() {
         setDescription('');
         setPrice('');
         setThumbnail(null);
-        setTranscript(null);
         setAgreeToTerms(false);
         router.push('/course-management');
       } else {
@@ -92,9 +102,8 @@ export default function UploadCoursePage() {
     <div className="flex">
       <Sidebar />
       <div className="flex-1 flex flex-col p-8">
-        <Toaster /> {/* Toaster component for notifications */}
-        
-        {/* Terms of Service Modal */}
+        <Toaster />
+
         {showTOS && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-8 w-11/12 max-w-lg relative">
@@ -175,8 +184,11 @@ export default function UploadCoursePage() {
               </div>
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+                disabled={isSubmitting || !title}
+                title={!title ? 'Enter the title first' : ''}
+                className={`${
+                  !title ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                } text-white px-6 py-2 rounded-lg`}
               >
                 {isSubmitting ? 'Creating...' : 'Create'}
               </button>
@@ -213,27 +225,6 @@ export default function UploadCoursePage() {
               />
               {thumbnail && (
                 <span className="text-gray-500 mt-2">{thumbnail.name}</span>
-              )}
-            </div>
-
-            <label className="block font-semibold mb-2 mt-6">Upload Transcript</label>
-            <div className="w-full flex flex-col items-center">
-              <button
-                type="button"
-                onClick={() => document.getElementById('transcriptInput').click()}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg mb-2 hover:bg-blue-700"
-              >
-                Choose Transcript
-              </button>
-              <input
-                id="transcriptInput"
-                type="file"
-                onChange={handleTranscriptChange}
-                accept="application/pdf"
-                style={{ display: 'none' }}
-              />
-              {transcript && (
-                <span className="text-gray-500 mt-2">{transcript.name}</span>
               )}
             </div>
           </div>

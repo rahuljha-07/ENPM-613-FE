@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '../components/Sidebar';
 import { Button } from '@/components/ui/button';
 import { ToastContainer, toast } from 'react-toastify';
-import dummyCourses from './dummyCourses.json';
 import 'react-toastify/dist/ReactToastify.css';
 
 const PUBLISHED_COURSES = `${process.env.NEXT_PUBLIC_ILIM_BE}/course/published`;

@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ToastContainer, toast } from "react-toastify";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import "react-toastify/dist/ReactToastify.css";
+import { uploadFileToS3 } from "../../lib/s3"; // Import the S3 upload function
 
 const BASE_URL = process.env.NEXT_PUBLIC_ILIM_BE;
 
@@ -24,8 +25,10 @@ export default function ProfilePage() {
   });
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [retypePassword, setRetypePassword] = useState(""); // New retype password state
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showRetypePassword, setShowRetypePassword] = useState(false); // Show/hide retype password
   const [editing, setEditing] = useState(false);
 
   useEffect(() => {
@@ -50,6 +53,30 @@ export default function ProfilePage() {
     } catch (error) {
       console.error("Error fetching profile data:", error);
       toast.error("Failed to load profile data.");
+    }
+  };
+
+  const uploadProfilePicture = async (file) => {
+    const userId = localStorage.getItem("id");
+    const fileName = `${userId}-profile.png`;
+
+    try {
+      const imageUrl = await uploadFileToS3(file, fileName); // Call the function from s3.tsx
+      setProfileData((prevData) => ({
+        ...prevData,
+        profileImageUrl: imageUrl,
+      }));
+      toast.success("Profile picture uploaded successfully!");
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      toast.error("Failed to upload profile picture.");
+    }
+  };
+
+  const handleProfilePictureChange = (e) => {
+    if (e.target.files.length > 0) {
+      const file = e.target.files[0];
+      uploadProfilePicture(file);
     }
   };
 
@@ -84,6 +111,13 @@ export default function ProfilePage() {
 
   const handleChangePassword = async () => {
     const token = localStorage.getItem("accessToken");
+
+    // Check if new password and retype password match
+    if (newPassword !== retypePassword) {
+      toast.error("New password and retype password do not match.");
+      return;
+    }
+
     if (!oldPassword || !newPassword) {
       toast.error("Please provide both old and new passwords.");
       return;
@@ -106,6 +140,7 @@ export default function ProfilePage() {
         toast.success("Password changed successfully!");
         setOldPassword("");
         setNewPassword("");
+        setRetypePassword(""); // Clear retype password
       } else {
         throw new Error("Failed to change password.");
       }
@@ -140,9 +175,18 @@ export default function ProfilePage() {
             />
           </div>
 
+          {/* Upload Profile Picture */}
+          <div className="flex justify-center mb-6">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleProfilePictureChange}
+              className="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+          </div>
+
           {/* Profile Info Grid */}
           <div className="grid grid-cols-2 gap-6 mb-6">
-            {/* Name and Role on the left */}
             <div>
               <label htmlFor="name" className="block text-sm font-semibold text-gray-700">
                 Name
@@ -169,7 +213,6 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* Birthdate and Email on the right */}
             <div>
               <label htmlFor="birthdate" className="block text-sm font-semibold text-gray-700">
                 Birthdate
@@ -197,7 +240,6 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Title and Bio spanning full width */}
           <div className="mb-6">
             <label htmlFor="title" className="block text-sm font-semibold text-gray-700">
               Title
@@ -225,7 +267,6 @@ export default function ProfilePage() {
             />
           </div>
 
-          {/* Action Buttons for Profile Update */}
           {editing ? (
             <div className="flex space-x-4">
               <Button onClick={() => setEditing(false)} className="bg-gray-500 hover:bg-gray-600 text-white w-full">
@@ -276,6 +317,23 @@ export default function ProfilePage() {
                 className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
               >
                 {showNewPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+              </span>
+            </div>
+
+            {/* Retype New Password Field */}
+            <div className="relative">
+              <Input
+                type={showRetypePassword ? "text" : "password"}
+                placeholder="Retype New Password"
+                value={retypePassword}
+                onChange={(e) => setRetypePassword(e.target.value)}
+                className="mt-1 w-full"
+              />
+              <span
+                onClick={() => setShowRetypePassword(!showRetypePassword)}
+                className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+              >
+                {showRetypePassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
               </span>
             </div>
             
