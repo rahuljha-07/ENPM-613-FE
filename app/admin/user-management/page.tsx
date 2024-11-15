@@ -1,4 +1,4 @@
-"use client";
+"use client"; 
 
 import React, { useEffect, useState, useCallback } from 'react';
 import Sidebar from '../../components/Sidebar';
@@ -9,22 +9,18 @@ export default function UserManagement() {
   const BASE_URL = process.env.NEXT_PUBLIC_ILIM_BE;
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [activeTab, setActiveTab] = useState('STUDENT'); // 'STUDENT' or 'INSTRUCTOR'
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
   useEffect(() => {
-    // Filter users based on search term
-    const lowercasedSearchTerm = searchTerm.toLowerCase();
-    const filtered = users.filter(user =>
-      user.name.toLowerCase().includes(lowercasedSearchTerm) ||
-      user.email.toLowerCase().includes(lowercasedSearchTerm)
-    );
+    // Filter users based on active tab (role)
+    const filtered = users.filter(user => user.role === activeTab);
     setFilteredUsers(filtered);
-  }, [searchTerm, users]);
+  }, [activeTab, users]);
 
   const getAccessToken = () => localStorage.getItem('accessToken');
 
@@ -48,7 +44,9 @@ export default function UserManagement() {
       const result = await response.json();
       if (response.ok) {
         setUsers(result.body);
-        setFilteredUsers(result.body); // Initialize filtered users
+        // Initialize filtered users based on the default active tab
+        const initialFiltered = result.body.filter(user => user.role === activeTab);
+        setFilteredUsers(initialFiltered);
       } else {
         toast.error(`Error: ${result.message || 'Failed to load users'}`);
       }
@@ -58,7 +56,7 @@ export default function UserManagement() {
     } finally {
       setLoading(false);
     }
-  }, [BASE_URL]);
+  }, [BASE_URL, activeTab]);
 
   const handleBlockUser = async (userId) => {
     const token = getAccessToken();
@@ -87,78 +85,95 @@ export default function UserManagement() {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
 
       {/* Sidebar */}
-      <div className="fixed h-full">
+      <aside className="fixed top-0 left-0 h-screen w-64 bg-gray-800 z-10">
         <Sidebar />
-      </div>
+      </aside>
 
       {/* Main Content */}
-      <div className="flex-1 p-6 pl-20 lg:pl-56 ml-16 overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">User Management</h2>
+      <main className="flex-1 ml-64 p-8">
+        {/* Enlarged Title */}
+        <h2 className="text-4xl font-bold mb-6 text-white">User Management</h2>
 
-        {/* Search Input */}
-        <input
-          type="text"
-          placeholder="Search users by name or email..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
-        />
+        {/* Tabs for User Roles */}
+        <div className="flex space-x-4 mb-6">
+          <button
+            onClick={() => setActiveTab('STUDENT')}
+            className={`px-6 py-3 rounded-md font-semibold ${
+              activeTab === 'STUDENT'
+                ? 'bg-red-600 text-white'
+                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+            } transition duration-300`}
+          >
+            Students
+          </button>
+          <button
+            onClick={() => setActiveTab('INSTRUCTOR')}
+            className={`px-6 py-3 rounded-md font-semibold ${
+              activeTab === 'INSTRUCTOR'
+                ? 'bg-red-600 text-white'
+                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+            } transition duration-300`}
+          >
+            Instructors
+          </button>
+        </div>
 
         {/* Loader */}
         {loading ? (
           <div className="flex items-center justify-center w-full h-64">
-            <div className="loader border-t-4 border-blue-500 rounded-full w-12 h-12 animate-spin"></div>
+            <div className="loader border-t-4 border-white rounded-full w-16 h-16 animate-spin"></div>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {filteredUsers.length > 0 ? (
               filteredUsers.map((user) => (
                 <div
                   key={user.id}
-                  className="flex items-center justify-between border border-gray-300 p-4 rounded-lg shadow-sm bg-white"
+                  className="flex flex-col md:flex-row items-center justify-between border border-gray-300 p-6 rounded-lg shadow-sm bg-white text-gray-800"
                 >
-                  <div className="flex items-center space-x-4">
+                  {/* Clickable Profile Section */}
+                  <div
+                    className="flex items-center space-x-4 cursor-pointer hover:underline"
+                    onClick={() => window.location.href = `/admin/user-management/${user.id}`}
+                  >
                     {/* Profile Image */}
                     <img
                       src={user.profileImageUrl || "/default-avatar.png"}
                       alt={`${user.name}'s profile`}
-                      className="w-12 h-12 rounded-full border"
+                      className="w-16 h-16 rounded-full border object-cover"
                     />
 
                     {/* Name and Email */}
                     <div>
-                      <p className="text-lg font-semibold text-gray-900">{user.name}</p>
+                      <p className="text-xl font-semibold">{user.name}</p>
                       <p className="text-sm text-gray-500">{user.email}</p>
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center space-x-4">
+                  <div className="flex space-x-4 mt-4 md:mt-0">
                     <button
-                      className="text-red-500 hover:underline"
+                      className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-300 shadow-lg transform hover:scale-105"
                       onClick={() => handleBlockUser(user.id)}
                     >
                       Block
                     </button>
-                    <button
-                      className="text-blue-500 hover:underline"
-                      onClick={() => window.location.href = `/admin/user-management/${user.id}`}
-                    >
-                      View User
-                    </button>
+                    {/* Removed "View User" Button */}
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-center text-gray-500">No users found.</p>
+              <div className="flex flex-col items-center justify-center mt-20">
+                <p className="text-2xl font-semibold text-gray-300">No users found.</p>
+              </div>
             )}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

@@ -8,6 +8,9 @@ import { Toaster, toast } from 'react-hot-toast'; // Using react-hot-toast
 export default function CourseManagementPage() {
   const router = useRouter();
   const [courses, setCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
+  const [filterStatus, setFilterStatus] = useState('ALL');
+  const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   const BASE_URL = process.env.NEXT_PUBLIC_ILIM_BE;
@@ -31,8 +34,10 @@ export default function CourseManagementPage() {
 
         if (response.ok) {
           const data = await response.json();
-          setCourses(data.body); // Set courses to data.body instead of data
-          toast.success("Courses fetched successfully!");
+          setCourses(data.body);
+          setFilteredCourses(data.body);
+          // Remove the success toast to prevent multiple toasts
+          // toast.success("Courses fetched successfully!");
         } else {
           const errorData = await response.json();
           toast.error(errorData.message || "Failed to fetch courses.");
@@ -46,38 +51,31 @@ export default function CourseManagementPage() {
     };
 
     fetchCourses();
-  }, [BASE_URL]);
+    // Empty dependency array ensures useEffect runs only once
+  }, []);
 
   // Function to handle editing a course
   const handleEdit = (id) => {
     router.push(`/manage-courses/module-view?id=${id}`);
   };
 
-  // Function to handle deleting a course
-  const handleDelete = async (id) => {
-    const confirmed = confirm("Are you sure you want to delete this course?");
-    if (!confirmed) return;
+  // Filter courses based on status and search term
+  useEffect(() => {
+    const filtered = courses.filter(course => {
+      const matchesStatus = filterStatus === 'ALL' || course.status === filterStatus;
+      const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesStatus && matchesSearch;
+    });
+    setFilteredCourses(filtered);
+  }, [filterStatus, searchTerm, courses]);
 
-    try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch(`${BASE_URL}/instructor/course/delete/${id}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        toast.success("Course deleted successfully!");
-        setCourses(courses.filter((course) => course.id !== id));
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.message || "Failed to delete course.");
-      }
-    } catch (error) {
-      console.error("Error deleting course:", error);
-      toast.error("An error occurred while deleting the course.");
-    }
+  // Mapping of course status to display text
+  const statusDisplayText = {
+    'DRAFT': 'DRAFT',
+    'WAIT_APPROVAL': 'WAITING APPROVAL',
+    'PUBLISHED': 'PUBLISHED',
+    'REJECTED': 'REJECTED',
+    // Add other statuses if any
   };
 
   return (
@@ -103,17 +101,62 @@ export default function CourseManagementPage() {
         />
 
         {/* Header Section */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Course Applications</h1>
-          {/* Uncomment and adjust the button as needed */}
-          {/* 
-          <button
-            onClick={() => router.push('/course/upload')}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
-          >
-            Create a Course
-          </button> 
-          */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
+          <h1 className="text-3xl font-bold text-white mb-4 md:mb-0">Course Applications</h1>
+
+          {/* Tabs for filtering */}
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setFilterStatus('DRAFT')}
+              className={`px-4 py-2 rounded-md ${
+                filterStatus === 'DRAFT' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              DRAFT
+            </button>
+            <button
+              onClick={() => setFilterStatus('WAIT_APPROVAL')}
+              className={`px-4 py-2 rounded-md ${
+                filterStatus === 'WAIT_APPROVAL' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              Waiting Approval
+            </button>
+            <button
+              onClick={() => setFilterStatus('PUBLISHED')}
+              className={`px-4 py-2 rounded-md ${
+                filterStatus === 'PUBLISHED' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              Published
+            </button>
+            <button
+              onClick={() => setFilterStatus('ALL')}
+              className={`px-4 py-2 rounded-md ${
+                filterStatus === 'ALL' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              All
+            </button>
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="flex justify-center mb-6">
+          <div className="flex w-full max-w-md">
+            <input
+              type="text"
+              placeholder="Search courses..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-1 px-4 py-2 rounded-l-md border border-gray-300 focus:outline-none text-gray-800"
+            />
+            <button
+              className="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 transition duration-300"
+            >
+              Search
+            </button>
+          </div>
         </div>
 
         {/* Loading Indicator */}
@@ -123,10 +166,10 @@ export default function CourseManagementPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {courses.length === 0 ? (
-              <p className="text-center text-gray-700">No courses found.</p>
+            {filteredCourses.length === 0 ? (
+              <p className="text-center text-gray-200">No courses found.</p>
             ) : (
-              courses.map((course) => (
+              filteredCourses.map((course) => (
                 <div
                   key={course.id}
                   className="border border-gray-300 rounded-lg p-4 flex justify-between items-center bg-white shadow-sm hover:shadow-md transition duration-300"
@@ -152,24 +195,20 @@ export default function CourseManagementPage() {
                     >
                       Edit
                     </button>
-                    <button
-                      onClick={() => handleDelete(course.id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition duration-300"
-                    >
-                      Delete
-                    </button>
                     <span
                       className={`font-semibold text-sm px-3 py-1 rounded ${
                         course.status === "DRAFT"
                           ? "bg-yellow-200 text-yellow-800"
-                          : course.status === "PENDING"
+                          : course.status === "WAIT_APPROVAL"
                           ? "bg-blue-200 text-blue-800"
                           : course.status === "REJECTED"
                           ? "bg-red-200 text-red-800"
-                          : "bg-green-200 text-green-800"
+                          : course.status === "PUBLISHED"
+                          ? "bg-green-200 text-green-800"
+                          : "bg-gray-200 text-gray-800"
                       }`}
                     >
-                      {course.status.toUpperCase()}
+                      {statusDisplayText[course.status] || course.status}
                     </span>
                   </div>
                 </div>
