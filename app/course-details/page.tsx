@@ -70,6 +70,7 @@ export default function CourseDetailsPage() {
   const handleBuyClick = (course) => {
     const { id, title, description, instructor, rating, price } = course;
     const query = new URLSearchParams({
+      id,
       title,
       description,
       instructor,

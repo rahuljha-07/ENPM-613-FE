@@ -43,7 +43,7 @@ export default function UploadCoursePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (showTOS) return;
-    if (!agreeToTerms) {
+    if (agreeToTerms) {
       toast.error('Please agree to the terms of service');
       return;
     }

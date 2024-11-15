@@ -30,8 +30,8 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="space-y-3 lg:w-full w-20 flex flex-col items-center lg:items-start">
-        <NavItem href="/course-details" label="Home" icon={<Home className="w-5 h-5 lg:w-6 lg:h-6" />} />
-        <NavItem href="/purchased-courses" label="Dashboard" icon={<Book className="w-5 h-5 lg:w-6 lg:h-6" />} />
+        <NavItem href="/course-details" label="All courses" icon={<Home className="w-5 h-5 lg:w-6 lg:h-6" />} />
+        <NavItem href="/purchased-courses" label="Purchased Course" icon={<Book className="w-5 h-5 lg:w-6 lg:h-6" />} />
         <NavItem href="/profile" label="Profile" icon={<User className="w-5 h-5 lg:w-6 lg:h-6" />} />
         
         {/* Admin item with dropdown toggle */}
