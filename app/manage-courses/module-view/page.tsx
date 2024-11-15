@@ -445,6 +445,47 @@ export default function EditCoursePage() {
     }
   };
 
+  const handleSubmitCourse = async () => {
+    // Retrieve the token from local storage
+    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+  
+    if (!token) {
+      toast.error("Authentication token is missing.");
+      return;
+    }
+  
+    if (!courseId) {
+      toast.error("Course ID is missing.");
+      return;
+    }
+  
+    try {
+      const response = await fetch(`${BASE_URL}/instructor/course/${courseId}/submit-for-approval`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          // Add other headers here if required by your API
+        },
+        // No body is sent as per instruction
+        body: null,
+      });
+  
+      if (response.ok) {
+        toast.success("Course submitted for approval successfully!");
+        router.push('/manage-courses/course-management');
+        // Optionally, you can redirect the user or perform other actions here
+      } else {
+        // Attempt to parse the error message from the response
+        const errorData = await response.json();
+        toast.error(errorData.message || "Failed to submit the course.");
+      }
+    } catch (error) {
+      console.error("Error submitting course:", error);
+      toast.error("An error occurred while submitting the course.");
+    }
+  };
+  
+
   const cancelDeleteQuiz = () => {
     setIsDeleteQuizModalOpen(false);
     setQuizToDelete(null);
@@ -462,10 +503,12 @@ export default function EditCoursePage() {
         <Toaster />
 
         {/* Back Button */}
-        <div className="flex justify-start mb-8">
+        <div className="flex justify-between items-center mb-8">
+          {/* Back Button */}
           <button
             onClick={() => router.back()}
             className="flex items-center text-gray-600 hover:text-gray-800 font-semibold px-4 py-2 rounded-lg bg-transparent hover:bg-gray-100 transition duration-300"
+            aria-label="Go back to previous page"
           >
             {/* Back Arrow Icon */}
             <svg
@@ -479,14 +522,25 @@ export default function EditCoursePage() {
             </svg>
             Back
           </button>
-        </div>
 
-        {/* Page Titles */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-2">Edit Course</h1>
-          {course && <h2 className="text-5xl font-semibold mb-2">{course.title}</h2>}
-          {/* Separator */}
-          <hr className="border-t-2 border-gray-300 w-24" />
+          {/* Submit Course Button */}
+          <button
+            onClick={handleSubmitCourse}
+            className="flex items-center text-white bg-green-500 hover:bg-green-600 font-semibold px-4 py-2 rounded-lg transition duration-300"
+            aria-label="Submit course for approval"
+          >
+            {/* Optional Submit Icon */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            Submit
+          </button>
         </div>
 
         {/* Modules Section */}
