@@ -56,7 +56,7 @@ export default function InstructorApplicationPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!agreeToTerms) {
+    if (agreeToTerms) {
       toast.error('Please agree to the terms of service');
       return;
     }
