@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import Sidebar from '../../components/Sidebar'; // Sidebar is retained
+import Sidebar from '../../components/Sidebar';
 import { useRouter } from 'next/navigation';
-import { Toaster, toast } from 'react-hot-toast'; // Using react-hot-toast
+import { Toaster, toast } from 'react-hot-toast';
 
 export default function CourseManagementPage() {
   const router = useRouter();
@@ -36,8 +36,6 @@ export default function CourseManagementPage() {
           const data = await response.json();
           setCourses(data.body);
           setFilteredCourses(data.body);
-          // Remove the success toast to prevent multiple toasts
-          // toast.success("Courses fetched successfully!");
         } else {
           const errorData = await response.json();
           toast.error(errorData.message || "Failed to fetch courses.");
@@ -51,15 +49,12 @@ export default function CourseManagementPage() {
     };
 
     fetchCourses();
-    // Empty dependency array ensures useEffect runs only once
   }, []);
 
-  // Function to handle editing a course
   const handleEdit = (id) => {
     router.push(`/manage-courses/module-view?id=${id}`);
   };
 
-  // Filter courses based on status and search term
   useEffect(() => {
     const filtered = courses.filter(course => {
       const matchesStatus = filterStatus === 'ALL' || course.status === filterStatus;
@@ -69,25 +64,20 @@ export default function CourseManagementPage() {
     setFilteredCourses(filtered);
   }, [filterStatus, searchTerm, courses]);
 
-  // Mapping of course status to display text
   const statusDisplayText = {
     'DRAFT': 'DRAFT',
     'WAIT_APPROVAL': 'WAITING APPROVAL',
     'PUBLISHED': 'PUBLISHED',
     'REJECTED': 'REJECTED',
-    // Add other statuses if any
   };
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-      {/* Sidebar with fixed positioning and full height */}
       <aside className="fixed top-0 left-0 h-screen w-64 bg-gray-800 z-10">
         <Sidebar />
       </aside>
 
-      {/* Main content with padding to prevent overlap */}
       <main className="flex-1 ml-64 p-8">
-        {/* Toast Container */}
         <Toaster
           position="top-right"
           reverseOrder={false}
@@ -100,48 +90,36 @@ export default function CourseManagementPage() {
           }}
         />
 
-        {/* Header Section */}
         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-4 md:mb-0">Course Applications</h1>
-
-          {/* Tabs for filtering */}
           <div className="flex space-x-2">
             <button
               onClick={() => setFilterStatus('DRAFT')}
-              className={`px-4 py-2 rounded-md ${
-                filterStatus === 'DRAFT' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'
-              }`}
+              className={`px-4 py-2 rounded-md ${filterStatus === 'DRAFT' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'}`}
             >
               DRAFT
             </button>
             <button
               onClick={() => setFilterStatus('WAIT_APPROVAL')}
-              className={`px-4 py-2 rounded-md ${
-                filterStatus === 'WAIT_APPROVAL' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'
-              }`}
+              className={`px-4 py-2 rounded-md ${filterStatus === 'WAIT_APPROVAL' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'}`}
             >
               Waiting Approval
             </button>
             <button
               onClick={() => setFilterStatus('PUBLISHED')}
-              className={`px-4 py-2 rounded-md ${
-                filterStatus === 'PUBLISHED' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'
-              }`}
+              className={`px-4 py-2 rounded-md ${filterStatus === 'PUBLISHED' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'}`}
             >
               Published
             </button>
             <button
               onClick={() => setFilterStatus('ALL')}
-              className={`px-4 py-2 rounded-md ${
-                filterStatus === 'ALL' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'
-              }`}
+              className={`px-4 py-2 rounded-md ${filterStatus === 'ALL' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'}`}
             >
               All
             </button>
           </div>
         </div>
 
-        {/* Search Bar */}
         <div className="flex justify-center mb-6">
           <div className="flex w-full max-w-md">
             <input
@@ -151,15 +129,12 @@ export default function CourseManagementPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1 px-4 py-2 rounded-l-md border border-gray-300 focus:outline-none text-gray-800"
             />
-            <button
-              className="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 transition duration-300"
-            >
+            <button className="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 transition duration-300">
               Search
             </button>
           </div>
         </div>
 
-        {/* Loading Indicator */}
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
             <div className="w-12 h-12 border-4 border-blue-600 border-dotted rounded-full animate-spin"></div>
@@ -174,6 +149,7 @@ export default function CourseManagementPage() {
                   key={course.id}
                   className="border border-gray-300 rounded-lg p-4 flex justify-between items-center bg-white shadow-sm hover:shadow-md transition duration-300"
                 >
+                  {/* Course Details */}
                   <div className="flex items-center">
                     <div className="w-12 h-12 bg-gray-100 flex items-center justify-center rounded-lg mr-4 overflow-hidden">
                       <img
@@ -187,14 +163,9 @@ export default function CourseManagementPage() {
                       <p className="text-sm text-gray-500">{course.description}</p>
                     </div>
                   </div>
+
+                  {/* Status and Edit Button */}
                   <div className="flex items-center space-x-4">
-                    {/* Pass course.id to handleEdit */}
-                    <button
-                      onClick={() => handleEdit(course.id)}
-                      className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition duration-300"
-                    >
-                      Edit
-                    </button>
                     <span
                       className={`font-semibold text-sm px-3 py-1 rounded ${
                         course.status === "DRAFT"
@@ -210,6 +181,14 @@ export default function CourseManagementPage() {
                     >
                       {statusDisplayText[course.status] || course.status}
                     </span>
+                    {course.status === "DRAFT" && (
+                      <button
+                        onClick={() => handleEdit(course.id)}
+                        className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition duration-300"
+                      >
+                        Edit
+                      </button>
+                    )}
                   </div>
                 </div>
               ))

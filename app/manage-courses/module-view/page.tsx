@@ -522,7 +522,13 @@ export default function EditCoursePage() {
             </svg>
             Back
           </button>
-
+          {/* GPT - Implement a Edit course button. when clicked on this button open a modal which gives the user to edit the course and it should make a put request to endpoint /instructor/update-course/{courseId} 
+          request body = {
+            "title": "string",
+            "description": "string",
+            "price": 0,
+            "thumbnailUrl": "string"
+          }   I have also given a UI example that this modal should look like. */}
           {/* Submit Course Button */}
           <button
             onClick={handleSubmitCourse}
