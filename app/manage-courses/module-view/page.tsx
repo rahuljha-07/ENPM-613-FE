@@ -60,6 +60,13 @@ export default function EditCoursePage() {
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
+  // Duration formatter function
+  const formatDuration = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins > 0 ? mins + " minute" + (mins > 1 ? "s " : " ") : ""}${secs} second${secs !== 1 ? "s" : ""}`;
+  };
+
   // Fetch modules and course details
   const fetchModules = async () => {
     setIsLoading(true);
@@ -712,7 +719,7 @@ export default function EditCoursePage() {
                                     <h4 className="font-semibold text-md">{item.video.title}</h4>
                                     <p className="text-sm">{item.video.description}</p>
                                     <p className="text-sm text-gray-500">
-                                      Duration: {item.video.durationInSeconds} seconds
+                                      Duration: {formatDuration(item.video.durationInSeconds)}
                                     </p>
                                   </div>
                                   <button

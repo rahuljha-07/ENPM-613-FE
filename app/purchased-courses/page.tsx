@@ -111,43 +111,37 @@ export default function PurchasedCoursesPage() {
             <p className="text-2xl font-semibold text-gray-300">You have not purchased any courses yet.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="space-y-4">
             {purchasedCourses.map((course) => (
               <div
                 key={course.id}
-                className="bg-white text-gray-800 p-6 rounded-lg shadow-lg flex flex-col justify-between transition duration-300 hover:shadow-xl"
+                className="flex items-center justify-between bg-white text-gray-800 p-4 rounded-lg shadow hover:shadow-md transition-shadow duration-300 cursor-pointer"
               >
-                {/* Non-Clickable Thumbnail and Title */}
-                <div className="flex flex-col space-y-4">
-                  {/* Thumbnail */}
-                  {course.thumbnailUrl && (
-                    <img
-                      src={course.thumbnailUrl}
-                      alt={`${course.title} thumbnail`}
-                      className="w-full h-40 object-cover rounded-md"
-                    />
-                  )}
-                  {/* Course Details */}
-                  <div>
-                    <h2 className="text-2xl font-semibold">{course.title}</h2>
-                    {/* Instructor information is kept for logic but not displayed */}
-                    <p className="text-gray-500 text-s">Date Purchased: {course.date}</p>
-                  </div>
-                </div>
+                {/* Thumbnail */}
+                <img
+                  src={course.thumbnailUrl}
+                  alt={`${course.title} thumbnail`}
+                  className="w-16 h-16 object-cover rounded-full mr-4"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://via.placeholder.com/64"; // fallback thumbnail
+                  }}
+                />
 
-                {/* Course Description */}
-                <p className="text-gray-700 mt-4">{course.description || "No description available."}</p>
+                {/* Course Details */}
+                <div className="flex-1 overflow-hidden">
+                  <h2 className="text-xl font-semibold">{course.title}</h2>
+                  <p className="text-gray-600 text-sm truncate">{course.description}</p>
+                  <p className="text-gray-500 text-sm">Date Purchased: {course.date}</p>
+                </div>
 
                 {/* Continue Button */}
-                <div className="mt-6">
-                  <Button
-                    onClick={() => handleContinueClick(course.id)}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold transition duration-200 shadow-md"
-                    aria-label={`Continue to ${course.title}`}
-                  >
-                    Continue
-                  </Button>
-                </div>
+                <Button
+                  onClick={() => handleContinueClick(course.id)}
+                  className="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 transition duration-200"
+                >
+                  Continue
+                </Button>
               </div>
             ))}
           </div>
