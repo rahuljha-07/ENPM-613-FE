@@ -130,8 +130,8 @@ export default function PurchasedCoursesPage() {
                   {/* Course Details */}
                   <div>
                     <h2 className="text-2xl font-semibold">{course.title}</h2>
-                    <p className="text-gray-600 text-sm">Instructor: {course.instructor || "Unknown Instructor"}</p>
-                    <p className="text-gray-500 text-xs">Date Purchased: {course.date}</p>
+                    {/* Instructor information is kept for logic but not displayed */}
+                    <p className="text-gray-500 text-s">Date Purchased: {course.date}</p>
                   </div>
                 </div>
 

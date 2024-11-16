@@ -15,9 +15,12 @@ export default function CourseInfoPage() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState(null);
   const [currentTranscript, setCurrentTranscript] = useState(null);
+  const [currentVideoTitle, setCurrentVideoTitle] = useState(null); // Store video title
+  const [currentVideoDescription, setCurrentVideoDescription] = useState(null); // Store video description
   const [quizResponses, setQuizResponses] = useState({});
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
   const [currentQuizItem, setCurrentQuizItem] = useState(null);
+  const [quizAttempts, setQuizAttempts] = useState({}); // Store latest quiz attempts by quiz ID
   const BASE_URL = process.env.NEXT_PUBLIC_ILIM_BE;
 
   const courseId = searchParams.get('courseId');
@@ -43,10 +46,49 @@ export default function CourseInfoPage() {
 
       const data = await response.json();
       setCourse(data.body);
+
+      // Fetch the latest quiz attempt for each quiz in the course
+      data.body.modules.forEach(module => {
+        module.items.forEach(item => {
+          if (item.itemType === "QUIZ") {
+            fetchQuizAttempt(item.payload.id); // Fetch latest attempt for each quiz
+          }
+        });
+      });
+
       setLoading(false);
     } catch (error) {
       console.error(error);
       setLoading(false);
+    }
+  };
+
+  const fetchQuizAttempt = async (quizId) => {
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        throw new Error('Access token not found. Please log in.');
+      }
+
+      const response = await fetch(`${BASE_URL}/student/quiz-attempt/${quizId}/last`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.body) {
+          setQuizAttempts(prev => ({
+            ...prev,
+            [quizId]: data.body
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching quiz attempt:', error);
     }
   };
 
@@ -63,8 +105,10 @@ export default function CourseInfoPage() {
     }));
   };
 
-  const openVideoModal = (videoUrl, transcriptUrl) => {
+  const openVideoModal = (videoUrl, title, description, transcriptUrl) => {
     setCurrentVideoUrl(videoUrl);
+    setCurrentVideoTitle(title);
+    setCurrentVideoDescription(description);
     setIsVideoModalOpen(true);
     fetchTranscript(transcriptUrl);
   };
@@ -83,6 +127,8 @@ export default function CourseInfoPage() {
   const closeVideoModal = () => {
     setIsVideoModalOpen(false);
     setCurrentVideoUrl(null);
+    setCurrentVideoTitle(null);
+    setCurrentVideoDescription(null);
     setCurrentTranscript(null);
   };
 
@@ -119,20 +165,17 @@ export default function CourseInfoPage() {
       if (!accessToken) {
         throw new Error('Access token not found. Please log in.');
       }
-  
-      // Construct the answers array as per the required response type
+
       const answers = Object.keys(quizResponses).map((questionId) => ({
         questionId,
         selectedOptionIds: quizResponses[questionId],
       }));
-  
-      // Create the payload with quizId and answers
+
       const payload = {
-        quizId: currentQuizItem.payload.id, // Assuming `currentQuizItem.payload.id` is the quiz ID
+        quizId: currentQuizItem.payload.id,
         answers,
       };
-  
-      // Make the POST request to submit the quiz
+
       const response = await fetch(`${BASE_URL}/student/attempt-quiz`, {
         method: 'POST',
         headers: {
@@ -141,15 +184,21 @@ export default function CourseInfoPage() {
         },
         body: JSON.stringify(payload),
       });
-  
-      // Handle the response
+
       if (!response.ok) {
         throw new Error('Failed to submit quiz.');
       }
-  
+
       const data = await response.json();
       closeQuizModal();
-      alert(`Quiz submitted successfully! Score: ${data.score}`);
+
+      const { userScore, totalScore, passed } = data.body;
+
+      alert(`Quiz submitted successfully! You scored ${userScore} out of ${totalScore}. You have ${passed ? "passed" : "failed"} the quiz.`);
+      
+      // Fetch the latest attempt to update the score display
+      fetchQuizAttempt(currentQuizItem.payload.id);
+
     } catch (error) {
       console.error(error);
       alert('Error submitting quiz.');
@@ -198,7 +247,13 @@ export default function CourseInfoPage() {
       alert('Error fetching certificate.');
     }
   };
-  
+
+  // Format duration to "minutes and seconds" format
+  const formatDuration = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins > 0 ? mins + " minutes " : ""}${secs} seconds`;
+  };
 
   if (loading) {
     return <p>Loading course details...</p>;
@@ -235,11 +290,8 @@ export default function CourseInfoPage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold">{course.title}</h1>
-              <p className="text-gray-600 mt-2">By: {course.instructorId || "Unknown Instructor"}</p>
-              <p className="text-gray-500 text-sm">Created At: {new Date(course.createdAt).toLocaleString()}</p>
-              <p className="text-gray-500 text-sm">Updated At: {new Date(course.updatedAt).toLocaleString()}</p>
-              <p className="text-gray-500 text-sm">Status: {course.status}</p>
-              <p className="text-gray-500 text-sm">Price: ${course.price}</p>
+              <p className="text-gray-500 text-s">Created At: {new Date(course.createdAt).toLocaleString()}</p>
+              <p className="text-gray-500 text-s">Updated At: {new Date(course.updatedAt).toLocaleString()}</p>
             </div>
             {course.thumbnailUrl && (
               <div className="flex flex-col items-center">
@@ -284,28 +336,35 @@ export default function CourseInfoPage() {
                           <h4 className="font-semibold">
                             {item.itemType === "VIDEO" ? "Video" : "Quiz"} - {item.payload.title}
                           </h4>
-                          {item.itemType === "VIDEO" && (
-                            <div>
-                              <p className="text-gray-600">{item.payload.description}</p>
-                              <button
-                                onClick={() => openVideoModal(item.payload.videoUrl, item.payload.transcriptUrl)}
-                                className="text-blue-500 hover:underline"
-                              >
-                                Watch Video
-                              </button>
-                              <p className="text-gray-500 text-sm mt-1">
-                                Duration: {Math.floor(item.payload.durationInSeconds / 60)} minutes
-                              </p>
-                            </div>
-                          )}
                           {item.itemType === "QUIZ" && (
                             <div>
+                              {quizAttempts[item.payload.id] ? (
+                                <p className="text-gray-600 mt-2">
+                                  Your Score: {quizAttempts[item.payload.id].userScore} / {quizAttempts[item.payload.id].totalScore}
+                                </p>
+                              ) : (
+                                <p className="text-gray-600 mt-2">No attempts yet</p>
+                              )}
                               <button
                                 onClick={() => openQuizModal(item)}
                                 className="text-blue-500 hover:underline"
                               >
                                 Take Quiz
                               </button>
+                            </div>
+                          )}
+                          {item.itemType === "VIDEO" && (
+                            <div>
+                              <p className="text-gray-600">{item.payload.description}</p>
+                              <button
+                                onClick={() => openVideoModal(item.payload.videoUrl, item.payload.title, item.payload.description, item.payload.transcriptUrl)}
+                                className="text-blue-500 hover:underline"
+                              >
+                                Watch Video
+                              </button>
+                              <p className="text-gray-500 text-sm mt-1">
+                                Duration: {formatDuration(item.payload.durationInSeconds)}
+                              </p>
                             </div>
                           )}
                         </div>
@@ -329,6 +388,8 @@ export default function CourseInfoPage() {
               >
                 <XMarkIcon className="w-6 h-6" />
               </button>
+              <h2 className="text-2xl text-gray-600 font-bold mb-2">{currentVideoTitle}</h2>
+              <p className="text-gray-600 mb-4">{currentVideoDescription}</p>
               <ReactPlayer
                 url={currentVideoUrl}
                 controls

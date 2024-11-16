@@ -51,6 +51,13 @@ export default function EditCoursePage() {
   const [newOptionText, setNewOptionText] = useState("");
   const [newOptionIsCorrect, setNewOptionIsCorrect] = useState(false);
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editPrice, setEditPrice] = useState('');
+  const [editThumbnail, setEditThumbnail] = useState(null);
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
+
   const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
 
   // Fetch modules and course details
@@ -329,7 +336,7 @@ export default function EditCoursePage() {
     setQuestions([...questions, currentQuestion]);
     setCurrentQuestion({
       text: "",
-      type: "MULTIPLE_CHOICE", // Changed from "TRUE_FALSE" to "MULTIPLE_CHOICE"
+      type: "MULTIPLE_CHOICE",
       points: 0,
       options: [],
     });
@@ -446,36 +453,31 @@ export default function EditCoursePage() {
   };
 
   const handleSubmitCourse = async () => {
-    // Retrieve the token from local storage
     const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
-  
+
     if (!token) {
       toast.error("Authentication token is missing.");
       return;
     }
-  
+
     if (!courseId) {
       toast.error("Course ID is missing.");
       return;
     }
-  
+
     try {
       const response = await fetch(`${BASE_URL}/instructor/course/${courseId}/submit-for-approval`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
-          // Add other headers here if required by your API
         },
-        // No body is sent as per instruction
         body: null,
       });
-  
+
       if (response.ok) {
         toast.success("Course submitted for approval successfully!");
         router.push('/manage-courses/course-management');
-        // Optionally, you can redirect the user or perform other actions here
       } else {
-        // Attempt to parse the error message from the response
         const errorData = await response.json();
         toast.error(errorData.message || "Failed to submit the course.");
       }
@@ -484,11 +486,67 @@ export default function EditCoursePage() {
       toast.error("An error occurred while submitting the course.");
     }
   };
-  
 
   const cancelDeleteQuiz = () => {
     setIsDeleteQuizModalOpen(false);
     setQuizToDelete(null);
+  };
+
+  const handleEditCourseSubmit = async (e) => {
+    e.preventDefault();
+    if (isUploadingThumbnail) return;
+
+    setIsUploadingThumbnail(true);
+
+    let thumbnailUrl = course.thumbnailUrl || '';
+
+    if (editThumbnail) {
+      try {
+        const id = localStorage.getItem('id');
+        const extension = editThumbnail.name.split('.').pop();
+        const sanitizedTitle = editTitle.replace(/\s+/g, '-').toLowerCase();
+        const fileName = `${id}-${sanitizedTitle}-thumbnail.${extension}`;
+
+        thumbnailUrl = await uploadFileToS3(editThumbnail, fileName);
+      } catch (error) {
+        console.error('Error uploading thumbnail to S3:', error);
+        toast.error('Failed to upload thumbnail');
+        setIsUploadingThumbnail(false);
+        return;
+      }
+    }
+
+    const payload = {
+      title: editTitle,
+      description: editDescription,
+      price: parseFloat(editPrice),
+      thumbnailUrl,
+    };
+
+    try {
+      const response = await fetch(`${BASE_URL}/instructor/update-course/${courseId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        toast.success('Course updated successfully!');
+        setIsEditModalOpen(false);
+        fetchModules();
+      } else {
+        const errorData = await response.json();
+        toast.error(`Failed to update course: ${errorData.message || response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error updating course:', error);
+      toast.error('An error occurred while updating the course');
+    } finally {
+      setIsUploadingThumbnail(false);
+    }
   };
 
   return (
@@ -522,31 +580,49 @@ export default function EditCoursePage() {
             </svg>
             Back
           </button>
-          {/* GPT - Implement a Edit course button. when clicked on this button open a modal which gives the user to edit the course and it should make a put request to endpoint /instructor/update-course/{courseId} 
-          request body = {
-            "title": "string",
-            "description": "string",
-            "price": 0,
-            "thumbnailUrl": "string"
-          }   I have also given a UI example that this modal should look like. */}
-          {/* Submit Course Button */}
-          <button
-            onClick={handleSubmitCourse}
-            className="flex items-center text-white bg-green-500 hover:bg-green-600 font-semibold px-4 py-2 rounded-lg transition duration-300"
-            aria-label="Submit course for approval"
-          >
-            {/* Optional Submit Icon */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          <div className="flex items-center space-x-4">
+            {/* Edit Course Button */}
+            <button
+              onClick={() => {
+                setIsEditModalOpen(true);
+                setEditTitle(course.title || '');
+                setEditDescription(course.description || '');
+                setEditPrice(course.price || '');
+                setEditThumbnail(null);
+              }}
+              className="flex items-center text-white bg-blue-500 hover:bg-blue-600 font-semibold px-4 py-2 rounded-lg transition duration-300"
+              aria-label="Edit course"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            Submit
-          </button>
+              {/* Optional Edit Icon */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5h2v14h-2zM5 11h14v2H5z" />
+              </svg>
+              Edit Course
+            </button>
+            <button
+              onClick={handleSubmitCourse}
+              className="flex items-center text-white bg-green-500 hover:bg-green-600 font-semibold px-4 py-2 rounded-lg transition duration-300"
+              aria-label="Submit course for approval"
+            >
+              {/* Optional Submit Icon */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Submit
+            </button>
+          </div>
         </div>
 
         {/* Modules Section */}
@@ -1084,8 +1160,74 @@ export default function EditCoursePage() {
           </div>
         )}
 
-        {/* Modal for Confirming Module Deletion */}
-        {/* ... (All other modals remain unchanged) */}
+        {/* Edit Course Modal */}
+        {isEditModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+              <h2 className="text-2xl font-bold mb-4">Edit Course</h2>
+              <form onSubmit={handleEditCourseSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-gray-700">Course Title</label>
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                    placeholder="Enter course title"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700">Description</label>
+                  <textarea
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                    placeholder="Enter course description"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700">Price</label>
+                  <input
+                    type="number"
+                    value={editPrice}
+                    onChange={(e) => setEditPrice(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                    placeholder="Enter price"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700">Thumbnail</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setEditThumbnail(e.target.files[0])}
+                    className="block w-full text-gray-700 mt-2"
+                  />
+                  {editThumbnail && <p className="text-sm text-gray-500">{editThumbnail.name}</p>}
+                </div>
+                <div className="flex justify-end space-x-4">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditModalOpen(false)}
+                    className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+                    disabled={isUploadingThumbnail}
+                  >
+                    {isUploadingThumbnail ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
       </main>
     </div>
