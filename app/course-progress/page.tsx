@@ -1,6 +1,7 @@
-import React from 'react';
-import { Progress } from '@/components/ui/progress';
-import ModuleAccordion from './components/ModuleAccordion';
+import React from "react";
+import { Progress } from "@/components/ui/progress";
+import ModuleAccordion from "./components/ModuleAccordion";
+import { Accordion } from "@/components/ui/accordion";
 
 const CourseProgressPage = () => {
   return (
@@ -8,15 +9,14 @@ const CourseProgressPage = () => {
       {/* Course Title and Progress */}
       <h1 className="text-2xl font-bold mb-2">How to learn Programming</h1>
       <p className="text-gray-500 text-sm mb-4">By: Ali Umair</p>
-      
       <Progress value={25} className="my-2" /> {/* 25% course progress */}
       <p className="text-sm text-gray-700 mb-6">Progress: 25%</p>
-
       {/* Course Description */}
       <p className="text-gray-600 mb-6">
-        This is the course description. Here, you can provide an overview of the course, covering the objectives, topics, and learning outcomes for students.
+        This is the course description. Here, you can provide an overview of the
+        course, covering the objectives, topics, and learning outcomes for
+        students.
       </p>
-
       {/* Modules Section */}
       <div>
         <h2 className="text-xl font-semibold mb-4">Modules</h2>

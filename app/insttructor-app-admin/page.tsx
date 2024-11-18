@@ -1,5 +1,5 @@
 import React from 'react';
-import ApplicationCard from './components/ApplicationCard';
+import ApplicationCard from './components/Applicationcard';
 
 const applications = [
   { name: 'John Doe', title: 'Instructor of Mathematics' },

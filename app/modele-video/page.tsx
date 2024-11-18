@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import VideoPlayer from './components/VideoPlayer';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
+"use client";
+import React, { useState } from "react";
+import VideoPlayer from "./components/VideoPlayer";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 
 const ModuleVideoPage = () => {
   const [showTranscript, setShowTranscript] = useState(false);
@@ -20,7 +21,10 @@ const ModuleVideoPage = () => {
         {/* Transcript Toggle */}
         <div className="flex items-center space-x-2">
           <p className="text-gray-700">Transcript</p>
-          <Switch checked={showTranscript} onCheckedChange={setShowTranscript} />
+          <Switch
+            checked={showTranscript}
+            onCheckedChange={setShowTranscript}
+          />
         </div>
 
         {/* Bookmark Button */}
@@ -31,7 +35,9 @@ const ModuleVideoPage = () => {
       {showTranscript && (
         <div className="mt-4 p-4 bg-gray-100 rounded-md">
           <p className="text-sm text-gray-600">
-            This is the transcript content. It will display the text of what is being spoken in the video, helping the user follow along or review key points.
+            This is the transcript content. It will display the text of what is
+            being spoken in the video, helping the user follow along or review
+            key points.
           </p>
         </div>
       )}
