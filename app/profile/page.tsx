@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ToastContainer, toast } from "react-toastify";
-import { EyeIcon, EyeSlashIcon, CameraIcon, DownloadIcon } from "@heroicons/react/24/solid";
+import { EyeIcon, EyeSlashIcon, CameraIcon, ArrowDownTrayIcon } from "@heroicons/react/24/solid";
 import "react-toastify/dist/ReactToastify.css";
 import { uploadFileToS3 } from "../../lib/s3"; // Import the S3 upload function
 
@@ -402,7 +402,7 @@ export default function ProfilePage() {
                         className="flex items-center text-blue-500 hover:underline"
                         download
                       >
-                        <DownloadIcon className="h-5 w-5 mr-1" />
+                        <ArrowDownTrayIcon className="h-5 w-5 mr-1" />
                         Download Resume
                       </a>
                     ) : (
