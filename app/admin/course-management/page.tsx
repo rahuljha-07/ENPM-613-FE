@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation'; // Correct import for app directory
 import Sidebar from '../../components/Sidebar';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,6 +13,8 @@ export default function CourseManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [confirmationModal, setConfirmationModal] = useState(null); // Modal state
+
+  const router = useRouter();
 
   useEffect(() => {
     fetchCourses();
@@ -174,6 +177,10 @@ export default function CourseManagement() {
     }
   };
 
+  const handleCourseClick = (courseId) => {
+    router.push(`/admin/course-management/${courseId}`);
+  };
+
   return (
     <div className="flex h-screen">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
@@ -231,7 +238,8 @@ export default function CourseManagement() {
               filteredCourses.map((course) => (
                 <div
                   key={course.id}
-                  className="flex items-center justify-between border border-gray-300 p-4 rounded-lg shadow-sm bg-white"
+                  className="flex items-center justify-between border border-gray-300 p-4 rounded-lg shadow-sm bg-white cursor-pointer"
+                  onClick={() => handleCourseClick(course.id)}
                 >
                   <div className="flex items-center space-x-4">
                     {/* Thumbnail */}
@@ -254,13 +262,19 @@ export default function CourseManagement() {
                       <>
                         <button
                           className="px-4 py-2 font-semibold text-white bg-green-500 hover:bg-green-600 rounded-full shadow-lg transition transform duration-300 hover:scale-105"
-                          onClick={() => handleOpenModal('approve', course.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenModal('approve', course.id);
+                          }}
                         >
                           Approve
                         </button>
                         <button
                           className="px-4 py-2 font-semibold text-white bg-red-500 hover:bg-red-600 rounded-full shadow-lg transition transform duration-300 hover:scale-105"
-                          onClick={() => handleOpenModal('reject', course.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenModal('reject', course.id);
+                          }}
                         >
                           Reject
                         </button>
@@ -269,7 +283,10 @@ export default function CourseManagement() {
                     {activeTab === "approved" && (
                       <button
                         className="px-4 py-2 font-semibold text-white bg-red-500 hover:bg-red-600 rounded-full shadow-lg transition transform duration-300 hover:scale-105"
-                        onClick={() => handleOpenModal('delete', course.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenModal('delete', course.id);
+                        }}
                       >
                         Delete
                       </button>
@@ -299,7 +316,9 @@ export default function CourseManagement() {
                 Cancel
               </button>
               <button
-                className={`px-4 py-2 ${confirmationModal.action === 'delete' ? 'bg-red-500' : 'bg-green-500'} text-white rounded hover:opacity-90`}
+                className={`px-4 py-2 ${
+                  confirmationModal.action === 'delete' ? 'bg-red-500' : 'bg-green-500'
+                } text-white rounded hover:opacity-90`}
                 onClick={handleConfirmAction}
               >
                 Confirm
