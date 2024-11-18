@@ -6,13 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ToastContainer, toast } from "react-toastify";
-import { EyeIcon, EyeSlashIcon, CameraIcon } from "@heroicons/react/24/solid";
+import { EyeIcon, EyeSlashIcon, CameraIcon, DownloadIcon } from "@heroicons/react/24/solid";
 import "react-toastify/dist/ReactToastify.css";
 import { uploadFileToS3 } from "../../lib/s3"; // Import the S3 upload function
 
 const BASE_URL = process.env.NEXT_PUBLIC_ILIM_BE;
 
 export default function ProfilePage() {
+  // Retrieve user role from localStorage
+  const userRole = localStorage.getItem("role");
+
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
@@ -36,6 +39,9 @@ export default function ProfilePage() {
   const [selectedProfileImage, setSelectedProfileImage] = useState(null);
   const [isSaving, setIsSaving] = useState(false); // State to handle save button loading
 
+  // State for Instructor Data
+  const [instructorData, setInstructorData] = useState(null);
+
   // Ref for the hidden file input
   const hiddenFileInput = useRef(null);
 
@@ -43,6 +49,17 @@ export default function ProfilePage() {
     fetchUserProfile();
   }, []);
 
+  useEffect(() => {
+    // Conditional GET request for INSTRUCTOR role
+    if (userRole === "INSTRUCTOR") {
+      fetchInstructorApplication();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userRole]);
+
+  /**
+   * Fetch user profile data from the backend.
+   */
   const fetchUserProfile = async () => {
     const token = localStorage.getItem("accessToken");
     try {
@@ -60,6 +77,47 @@ export default function ProfilePage() {
     } catch (error) {
       console.error("Error fetching profile data:", error);
       toast.error("Failed to load profile data.");
+    }
+  };
+
+  /**
+   * Fetch instructor application data if user is an INSTRUCTOR.
+   */
+  const fetchInstructorApplication = async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      console.error("Access token not found. Please log in.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${BASE_URL}/student/instructor-application?status=APPROVED`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.body && data.body.length > 0) {
+          setInstructorData(data.body[0]); // Assuming only one application per user
+          console.log("Instructor Application Response:", data);
+        } else {
+          console.log("No instructor application found.");
+        }
+      } else {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || "Failed to fetch instructor application."
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching instructor application:", error);
     }
   };
 
@@ -195,7 +253,6 @@ export default function ProfilePage() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center p-4 ml-64">
         <div className="flex flex-col bg-white text-gray-800 rounded-lg shadow-lg p-6 w-full max-w-lg">
-          
           {/* Profile Image */}
           <div className="flex justify-center mb-4">
             <img
@@ -309,18 +366,82 @@ export default function ProfilePage() {
             />
           </div>
 
+          {/* Instructor Details - Visible Only for Instructors */}
+          {userRole === "INSTRUCTOR" && instructorData && (
+            <div className="mt-6 bg-gray-100 text-gray-800 p-6 rounded-lg shadow-md w-full">
+              <h2 className="text-xl font-semibold mb-4">Instructor Details</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="font-semibold">School Name:</p>
+                  <p>{instructorData.schoolName || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Degree Title:</p>
+                  <p>{instructorData.degreeTitle || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Graduate Date:</p>
+                  <p>{instructorData.graduateDate || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Professional Title:</p>
+                  <p>{instructorData.professionalTitle || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Experience Years:</p>
+                  <p>{instructorData.experienceYears !== null ? instructorData.experienceYears : "N/A"}</p>
+                </div>
+                <div>
+                  <p className="font-semibold">Resume:</p>
+                  <p>
+                    {instructorData.resumeUrl ? (
+                      <a
+                        href={instructorData.resumeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center text-blue-500 hover:underline"
+                        download
+                      >
+                        <DownloadIcon className="h-5 w-5 mr-1" />
+                        Download Resume
+                      </a>
+                    ) : (
+                      "No resume uploaded"
+                    )}
+                  </p>
+                </div>
+                <div className="col-span-2">
+                  <p className="font-semibold">Teaching Experience:</p>
+                  <p>{instructorData.teachingExperience || "N/A"}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="font-semibold">Instructor Title:</p>
+                  <p>{instructorData.instructorTitle || "N/A"}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="font-semibold">Instructor Bio:</p>
+                  <p>{instructorData.instructorBio || "N/A"}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Edit/Save Buttons */}
           {editing ? (
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 mt-6 w-full">
               <Button onClick={() => setEditing(false)} className="bg-gray-500 hover:bg-gray-600 text-white w-full">
                 Cancel
               </Button>
-              <Button onClick={handleSaveProfile} className="bg-green-500 hover:bg-green-600 text-white w-full" disabled={isSaving}>
+              <Button
+                onClick={handleSaveProfile}
+                className="bg-green-500 hover:bg-green-600 text-white w-full"
+                disabled={isSaving}
+              >
                 {isSaving ? "Saving..." : "Save Profile"}
               </Button>
             </div>
           ) : (
-            <Button onClick={() => setEditing(true)} className="bg-blue-500 hover:bg-blue-600 text-white w-full">
+            <Button onClick={() => setEditing(true)} className="bg-blue-500 hover:bg-blue-600 text-white w-full mt-6">
               Edit Profile
             </Button>
           )}

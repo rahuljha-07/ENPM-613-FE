@@ -15,12 +15,14 @@ export default function CourseInfoPage() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState(null);
   const [currentTranscript, setCurrentTranscript] = useState(null);
-  const [currentVideoTitle, setCurrentVideoTitle] = useState(null); // Store video title
-  const [currentVideoDescription, setCurrentVideoDescription] = useState(null); // Store video description
+  const [currentVideoTitle, setCurrentVideoTitle] = useState(null);
+  const [currentVideoDescription, setCurrentVideoDescription] = useState(null);
   const [quizResponses, setQuizResponses] = useState({});
   const [isQuizModalOpen, setIsQuizModalOpen] = useState(false);
   const [currentQuizItem, setCurrentQuizItem] = useState(null);
-  const [quizAttempts, setQuizAttempts] = useState({}); // Store latest quiz attempts by quiz ID
+  const [quizAttempts, setQuizAttempts] = useState({});
+  const [courseProgress, setCourseProgress] = useState(null); // State for course progress
+
   const BASE_URL = process.env.NEXT_PUBLIC_ILIM_BE;
 
   const courseId = searchParams.get('courseId');
@@ -48,9 +50,9 @@ export default function CourseInfoPage() {
       setCourse(data.body);
 
       // Fetch the latest quiz attempt for each quiz in the course
-      data.body.modules.forEach(module => {
-        module.items.forEach(item => {
-          if (item.itemType === "QUIZ") {
+      data.body.modules.forEach((module) => {
+        module.items.forEach((item) => {
+          if (item.itemType === 'QUIZ') {
             fetchQuizAttempt(item.payload.id); // Fetch latest attempt for each quiz
           }
         });
@@ -81,9 +83,9 @@ export default function CourseInfoPage() {
       if (response.ok) {
         const data = await response.json();
         if (data.body) {
-          setQuizAttempts(prev => ({
+          setQuizAttempts((prev) => ({
             ...prev,
-            [quizId]: data.body
+            [quizId]: data.body,
           }));
         }
       }
@@ -92,9 +94,36 @@ export default function CourseInfoPage() {
     }
   };
 
+  const fetchCourseProgress = async () => {
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        throw new Error('Access token not found. Please log in.');
+      }
+
+      const response = await fetch(`${BASE_URL}/student/course/${courseId}/check-progress`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch course progress.');
+      }
+
+      const data = await response.json();
+      setCourseProgress(data.body);
+    } catch (error) {
+      console.error('Error fetching course progress:', error);
+    }
+  };
+
   useEffect(() => {
     if (courseId) {
       fetchCourseDetails();
+      fetchCourseProgress(); // Fetch course progress
     }
   }, [courseId]);
 
@@ -119,8 +148,8 @@ export default function CourseInfoPage() {
       const text = await response.text();
       setCurrentTranscript(text);
     } catch (error) {
-      console.error("Failed to fetch transcript:", error);
-      setCurrentTranscript("Transcript not available.");
+      console.error('Failed to fetch transcript:', error);
+      setCurrentTranscript('Transcript not available.');
     }
   };
 
@@ -194,11 +223,17 @@ export default function CourseInfoPage() {
 
       const { userScore, totalScore, passed } = data.body;
 
-      alert(`Quiz submitted successfully! You scored ${userScore} out of ${totalScore}. You have ${passed ? "passed" : "failed"} the quiz.`);
-      
+      alert(
+        `Quiz submitted successfully! You scored ${userScore} out of ${totalScore}. You have ${
+          passed ? 'passed' : 'failed'
+        } the quiz.`
+      );
+
       // Fetch the latest attempt to update the score display
       fetchQuizAttempt(currentQuizItem.payload.id);
 
+      // Fetch course progress to update progress bar
+      fetchCourseProgress();
     } catch (error) {
       console.error(error);
       alert('Error submitting quiz.');
@@ -211,36 +246,28 @@ export default function CourseInfoPage() {
       if (!accessToken) {
         throw new Error('Access token not found. Please log in.');
       }
-  
+
       const response = await fetch(`${BASE_URL}/student/course/${courseId}/certificate`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/pdf', // Set the correct content type for PDF
           Authorization: `Bearer ${accessToken}`,
         },
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to fetch certificate.');
       }
-  
+
       // Convert response to a blob (binary data for the PDF)
       const blob = await response.blob();
-  
+
       // Create a URL for the blob
       const url = URL.createObjectURL(blob);
-  
-      // Option 1: Open the PDF in a new tab
+
+      // Open the PDF in a new tab
       window.open(url, '_blank');
-  
-      // Option 2: Trigger a download of the PDF
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'certificate.pdf'; // Specify the filename
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link); // Clean up by removing the link element
-  
+
       alert('Certificate fetched successfully');
     } catch (error) {
       console.error('Error fetching certificate:', error);
@@ -252,7 +279,7 @@ export default function CourseInfoPage() {
   const formatDuration = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins > 0 ? mins + " minutes " : ""}${secs} seconds`;
+    return `${mins > 0 ? mins + ' minutes ' : ''}${secs} seconds`;
   };
 
   if (loading) {
@@ -300,17 +327,42 @@ export default function CourseInfoPage() {
                   alt={course.title}
                   className="w-48 h-32 object-cover rounded-lg shadow-md"
                 />
-                <button
-                  onClick={viewCertificate}
-                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                >
-                  View Certificate
-                </button>
+                {courseProgress ? (
+                  courseProgress.totalQuizzes === courseProgress.completedQuizzes ? (
+                    <button
+                      onClick={viewCertificate}
+                      className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    >
+                      View Certificate
+                    </button>
+                  ) : (
+                    <div className="mt-4 w-full">
+                      <div className="w-full bg-gray-200 rounded-full h-4">
+                        <div
+                          className="bg-blue-500 h-4 rounded-full"
+                          style={{
+                            width: `${
+                              (courseProgress.completedQuizzes / courseProgress.totalQuizzes) * 100
+                            }%`,
+                          }}
+                        ></div>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-2">
+                        Progress: {courseProgress.completedQuizzes} of {courseProgress.totalQuizzes}{' '}
+                        quizzes completed
+                      </p>
+                    </div>
+                  )
+                ) : (
+                  <div className="mt-4 w-full">
+                    <p className="text-sm text-gray-600">Loading progress...</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
 
-          <p className="text-gray-700 mb-8">{course.description || "No description available."}</p>
+          <p className="text-gray-700 mb-8">{course.description || 'No description available.'}</p>
 
           <h2 className="text-xl font-semibold mb-4">Modules</h2>
           <div className="space-y-4">
@@ -334,13 +386,14 @@ export default function CourseInfoPage() {
                       {module.items.map((item) => (
                         <div key={item.id} className="p-4 bg-white shadow rounded-lg">
                           <h4 className="font-semibold">
-                            {item.itemType === "VIDEO" ? "Video" : "Quiz"} - {item.payload.title}
+                            {item.itemType === 'VIDEO' ? 'Video' : 'Quiz'} - {item.payload.title}
                           </h4>
-                          {item.itemType === "QUIZ" && (
+                          {item.itemType === 'QUIZ' && (
                             <div>
                               {quizAttempts[item.payload.id] ? (
                                 <p className="text-gray-600 mt-2">
-                                  Your Score: {quizAttempts[item.payload.id].userScore} / {quizAttempts[item.payload.id].totalScore}
+                                  Your Score: {quizAttempts[item.payload.id].userScore} /{' '}
+                                  {quizAttempts[item.payload.id].totalScore}
                                 </p>
                               ) : (
                                 <p className="text-gray-600 mt-2">No attempts yet</p>
@@ -353,11 +406,18 @@ export default function CourseInfoPage() {
                               </button>
                             </div>
                           )}
-                          {item.itemType === "VIDEO" && (
+                          {item.itemType === 'VIDEO' && (
                             <div>
                               <p className="text-gray-600">{item.payload.description}</p>
                               <button
-                                onClick={() => openVideoModal(item.payload.videoUrl, item.payload.title, item.payload.description, item.payload.transcriptUrl)}
+                                onClick={() =>
+                                  openVideoModal(
+                                    item.payload.videoUrl,
+                                    item.payload.title,
+                                    item.payload.description,
+                                    item.payload.transcriptUrl
+                                  )
+                                }
                                 className="text-blue-500 hover:underline"
                               >
                                 Watch Video
@@ -390,12 +450,7 @@ export default function CourseInfoPage() {
               </button>
               <h2 className="text-2xl text-gray-600 font-bold mb-2">{currentVideoTitle}</h2>
               <p className="text-gray-600 mb-4">{currentVideoDescription}</p>
-              <ReactPlayer
-                url={currentVideoUrl}
-                controls
-                width="100%"
-                height="100%"
-              />
+              <ReactPlayer url={currentVideoUrl} controls width="100%" height="100%" />
               {currentTranscript && (
                 <div className="mt-4 bg-gray-200 p-4 rounded overflow-y-auto max-h-64">
                   <h4 className="font-semibold text-lg mb-2">Transcript</h4>
@@ -418,35 +473,41 @@ export default function CourseInfoPage() {
               <h3 className="text-2xl font-bold mb-4 text-gray-800">{currentQuizItem.payload.title}</h3>
               <p className="text-gray-700 mb-4">{currentQuizItem.payload.description}</p>
               <div className="space-y-6">
-                {currentQuizItem.payload.questions && currentQuizItem.payload.questions.map((question, qIndex) => (
-                  <div key={question.id} className="border-b pb-4">
-                    <p className="font-semibold text-gray-800 mb-2">
-                      {qIndex + 1}. {question.text} 
-                      <span className="text-sm text-gray-600">({question.type === 'MULTIPLE_CHOICE' ? 'Multiple choice' : 'True/False'})</span>
-                    </p>
-                    <div className="mt-2 space-y-2">
-                      {question.options.map((option) => (
-                        <div key={option.id} className="flex items-center">
-                          <input
-                            type={question.type === "MULTIPLE_CHOICE" ? "checkbox" : "radio"}
-                            name={`question-${question.id}`}
-                            value={option.id}
-                            checked={Array.isArray(quizResponses[question.id]) && quizResponses[question.id].includes(option.id)}
-                            onChange={() =>
-                              handleOptionSelect(
-                                question.id,
-                                option.id,
-                                question.type === "MULTIPLE_CHOICE"
-                              )
-                            }
-                            className="mr-2"
-                          />
-                          <label className="text-gray-800">{option.text}</label>
-                        </div>
-                      ))}
+                {currentQuizItem.payload.questions &&
+                  currentQuizItem.payload.questions.map((question, qIndex) => (
+                    <div key={question.id} className="border-b pb-4">
+                      <p className="font-semibold text-gray-800 mb-2">
+                        {qIndex + 1}. {question.text}
+                        <span className="text-sm text-gray-600">
+                          ({question.type === 'MULTIPLE_CHOICE' ? 'Multiple choice' : 'True/False'})
+                        </span>
+                      </p>
+                      <div className="mt-2 space-y-2">
+                        {question.options.map((option) => (
+                          <div key={option.id} className="flex items-center">
+                            <input
+                              type={question.type === 'MULTIPLE_CHOICE' ? 'checkbox' : 'radio'}
+                              name={`question-${question.id}`}
+                              value={option.id}
+                              checked={
+                                Array.isArray(quizResponses[question.id]) &&
+                                quizResponses[question.id].includes(option.id)
+                              }
+                              onChange={() =>
+                                handleOptionSelect(
+                                  question.id,
+                                  option.id,
+                                  question.type === 'MULTIPLE_CHOICE'
+                                )
+                              }
+                              className="mr-2"
+                            />
+                            <label className="text-gray-800">{option.text}</label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
               <button
                 onClick={submitQuiz}

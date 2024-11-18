@@ -90,7 +90,7 @@ export default function Sidebar() {
             </Button>
             {isManageCoursesOpen && (
               <div className="mt-2 space-y-2 lg:pl-6">
-                <DropdownItem href="/manage-courses/course-management" label="Course Management" />
+                <DropdownItem href="/manage-courses/course-management" label="My Courses" />
                 <DropdownItem href="/manage-courses/upload-course" label="Create Course" />
               </div>
             )}

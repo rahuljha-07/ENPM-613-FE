@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Sidebar from '../../../components/Sidebar';
+import { XMarkIcon } from '@heroicons/react/24/solid';
 
 export default function CourseDetailsPage() {
   const router = useRouter();
@@ -16,6 +17,9 @@ export default function CourseDetailsPage() {
 
   const courseId = params.id;
 
+  /**
+   * Fetch course details from the backend.
+   */
   const fetchCourseDetails = async () => {
     try {
       const accessToken = localStorage.getItem('accessToken');
@@ -41,9 +45,13 @@ export default function CourseDetailsPage() {
     } catch (error) {
       console.error(error);
       setLoading(false);
+      alert('Error fetching course details. Please try again later.');
     }
   };
 
+  /**
+   * Fetch IDs of courses that the user has purchased.
+   */
   const fetchPurchasedCourseIds = async () => {
     try {
       const accessToken = localStorage.getItem('accessToken');
@@ -74,13 +82,9 @@ export default function CourseDetailsPage() {
     }
   };
 
-  useEffect(() => {
-    if (courseId) {
-      fetchCourseDetails();
-      fetchPurchasedCourseIds();
-    }
-  }, [courseId]);
-
+  /**
+   * Handle payment process initiation.
+   */
   const handlePayment = async () => {
     setPaymentLoading(true);
     try {
@@ -109,18 +113,24 @@ export default function CourseDetailsPage() {
       } else {
         console.error('Error initiating purchase');
         setPaymentLoading(false);
+        alert('Failed to initiate purchase. Please try again.');
       }
     } catch (error) {
       console.error('Error:', error);
       setPaymentLoading(false);
+      alert('An error occurred during payment. Please try again.');
     }
   };
 
+  /**
+   * Poll the backend to check the payment status.
+   */
   const pollPaymentStatus = () => {
     const interval = setInterval(async () => {
       if (attempts >= 30) {
         clearInterval(interval);
         setPaymentLoading(false);
+        alert('Payment verification timed out. Please try again.');
         return;
       }
 
@@ -142,6 +152,7 @@ export default function CourseDetailsPage() {
           if (data.body === 'SUCCEEDED') {
             clearInterval(interval);
             setPaymentLoading(false);
+            alert('Purchase successful! Redirecting to your courses.');
             router.push('/purchased-courses');
           } else {
             setAttempts((prev) => prev + 1);
@@ -149,31 +160,69 @@ export default function CourseDetailsPage() {
         }
       } catch (error) {
         console.error('Error checking payment status:', error);
+        clearInterval(interval);
+        setPaymentLoading(false);
+        alert('An error occurred while verifying payment. Please try again.');
       }
     }, 5000); // 5000ms interval
   };
 
-  const handleGoToCourse = () => {
-    router.push(`/purchased-courses/course-info/${courseId}`);
-  };
+  /**
+   * Handle redirection to the Course Info page.
+   * Removed as per user request.
+   */
 
-  if (loading) {
-    return <p>Loading course details...</p>;
-  }
+  /**
+   * Fetch course details and purchased courses upon component mount.
+   */
+  useEffect(() => {
+    if (courseId) {
+      fetchCourseDetails();
+      fetchPurchasedCourseIds();
+    } else {
+      console.error('courseId is missing in route parameters.');
+      alert('Course ID is missing. Redirecting to courses page.');
+      router.push('/purchased-courses');
+    }
+  }, [courseId]);
 
-  if (!course) {
-    return <p>Failed to load course details.</p>;
-  }
-
+  /**
+   * Determine if the current user has purchased the course.
+   */
   const isCoursePurchased = purchasedCourseIds.includes(courseId);
   const userRole = localStorage.getItem('role'); // Get user role from localStorage
+
+  /**
+   * Render loading state.
+   */
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-gray-700">Loading course details...</p>
+      </div>
+    );
+  }
+
+  /**
+   * Render error state if course details fail to load.
+   */
+  if (!course) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-red-500">Failed to load course details.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white">
       <Sidebar />
 
       <div className="flex-1 p-8 ml-64">
-        {/* Back Button and Buy/Go to Course Button */}
+        {/* Course Overview Title */}
+        <h1 className="text-4xl font-bold mb-6">Course Overview</h1>
+
+        {/* Back Button and Buy Button */}
         <div className="flex justify-between items-center mb-6">
           <button
             onClick={() => router.back()}
@@ -191,25 +240,17 @@ export default function CourseDetailsPage() {
             Courses
           </button>
 
-          {userRole !== 'ADMIN' && (
-            isCoursePurchased ? (
-              <button
-                onClick={handleGoToCourse}
-                className="flex items-center text-white bg-blue-500 hover:bg-blue-600 font-semibold px-4 py-2 rounded-lg shadow-md transition duration-300"
-              >
-                Go to Course
-              </button>
-            ) : (
-              <button
-                onClick={handlePayment}
-                disabled={paymentLoading}
-                className={`flex items-center text-white bg-green-500 hover:bg-green-600 font-semibold px-4 py-2 rounded-lg shadow-md transition duration-300 ${
-                  paymentLoading ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              >
-                {paymentLoading ? 'Processing...' : 'Buy Course'}
-              </button>
-            )
+          {/* Conditional Rendering of Buy Button */}
+          {userRole !== 'ADMIN' && !isCoursePurchased && (
+            <button
+              onClick={handlePayment}
+              disabled={paymentLoading}
+              className={`flex items-center text-white bg-green-500 hover:bg-green-600 font-semibold px-4 py-2 rounded-lg shadow-md transition duration-300 ${
+                paymentLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              {paymentLoading ? 'Processing...' : 'Buy Course'}
+            </button>
           )}
         </div>
 
@@ -246,26 +287,37 @@ export default function CourseDetailsPage() {
           {/* Modules Displayed as Non-clickable Tiles */}
           <h2 className="text-xl font-semibold mb-4">Modules</h2>
           <div className="space-y-4">
-            {(userRole === 'ADMIN' ? course.courseModules : course.modules) && 
-            (userRole === 'ADMIN' ? course.courseModules : course.modules).length > 0 ? (
-              (userRole === 'ADMIN' ? course.courseModules : course.modules).map((module, index) => (
-                <div
-                  key={module.id}
-                  className="flex justify-between items-center p-4 bg-gray-100 rounded-lg shadow-md h-full"
-                  style={{ cursor: 'default' }}
-                >
-                  <h3 className="font-semibold text-lg">
-                    Module {index + 1}: {module.title}
-                  </h3>
-                  <p className="text-gray-500">{module.description}</p>
-                </div>
-              ))
-            ) :
-            (
-              <p className="text-gray-500">No modules available for this course.</p>
-            )}
-          </div>
+            {(() => {
+              // Determine the modules based on user role
+              const modules =
+                userRole === 'ADMIN' || userRole === 'INSTRUCTOR'
+                  ? course?.courseModules
+                  : course?.modules;
 
+              // Check if modules exist and have at least one item
+              if (Array.isArray(modules) && modules.length > 0) {
+                return modules.map((module, index) => (
+                  <div
+                    key={module.id}
+                    className="flex justify-between items-center p-4 bg-gray-100 rounded-lg shadow-md h-full"
+                    style={{ cursor: 'default' }}
+                  >
+                    <div>
+                      <h3 className="font-semibold text-lg">
+                        Module {index + 1}: {module.title}
+                      </h3>
+                      <p className="text-gray-500">{module.description}</p>
+                    </div>
+                  </div>
+                ));
+              } else {
+                // Display a message if no modules are available
+                return (
+                  <p className="text-gray-500">No modules available for this course.</p>
+                );
+              }
+            })()}
+          </div>
         </div>
       </div>
     </div>

@@ -603,13 +603,19 @@ export default function EditCoursePage() {
               {/* Optional Edit Icon */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 mr-2"
+                className="h-6 w-6 mr-2"  
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5h2v14h-2zM5 11h14v2H5z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15.232 5.232l3.536 3.536M9 11l6.768-6.768a2 2 0 1 1 2.828 2.828L11.828 13.828a2 2 0 0 1-1.414.586H9v-2.414a2 2 0 0 1 .586-1.414z"
+                />
               </svg>
+
               Edit Course
             </button>
             <button
