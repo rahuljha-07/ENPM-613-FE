@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import ApplicationCard from './components/ApplicationCard';
-import RejectionModal from './components/RejectionModal';
+"use client";
+import React, { useState } from "react";
+import RejectionModal from "./components/RejectionModal";
+import ApplicationCard from "../insttructor-app-admin/components/Applicationcard";
 
 const applications = [
-  { name: 'John Doe', title: 'Instructor of Mathematics' },
-  { name: 'Jane Smith', title: 'Instructor of Science' },
+  { name: "John Doe", title: "Instructor of Mathematics" },
+  { name: "Jane Smith", title: "Instructor of Science" },
 ];
 
 const InstructorApplicationsPage = () => {

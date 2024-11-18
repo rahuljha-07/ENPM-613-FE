@@ -1,21 +1,31 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ToastContainer, toast } from "react-toastify";
-import { EyeIcon, EyeSlashIcon, CameraIcon, ArrowDownTrayIcon } from "@heroicons/react/24/solid";
+import {
+  EyeIcon,
+  EyeSlashIcon,
+  CameraIcon,
+  ArrowDownTrayIcon,
+} from "@heroicons/react/24/solid";
 import "react-toastify/dist/ReactToastify.css";
-import { uploadFileToS3 } from "../../lib/s3"; // Import the S3 upload function
+import { uploadFileToS3 } from "../../lib/s3";
 
 const BASE_URL = process.env.NEXT_PUBLIC_ILIM_BE;
 
 export default function ProfilePage() {
-  // Retrieve user role from localStorage
-  const userRole = localStorage.getItem("role");
+  const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null);
+  const [token, setToken] = useState(null);
+  const [userId, setUserId] = useState(null);
 
+  // Initialize all other state variables
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
@@ -28,40 +38,40 @@ export default function ProfilePage() {
   });
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [retypePassword, setRetypePassword] = useState(""); // New retype password state
+  const [retypePassword, setRetypePassword] = useState("");
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showRetypePassword, setShowRetypePassword] = useState(false); // Show/hide retype password
+  const [showRetypePassword, setShowRetypePassword] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false); // New state for collapsible section
-
-  // New state to store selected profile image file
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [selectedProfileImage, setSelectedProfileImage] = useState(null);
-  const [isSaving, setIsSaving] = useState(false); // State to handle save button loading
-
-  // State for Instructor Data
+  const [isSaving, setIsSaving] = useState(false);
   const [instructorData, setInstructorData] = useState(null);
-
-  // Ref for the hidden file input
   const hiddenFileInput = useRef(null);
 
+  // Initialize client-side data
   useEffect(() => {
-    fetchUserProfile();
+    setUserRole(localStorage.getItem("role"));
+    setToken(localStorage.getItem("accessToken"));
+    setUserId(localStorage.getItem("id"));
+    setIsLoading(false);
   }, []);
 
+  // Fetch profile data after client-side initialization
   useEffect(() => {
-    // Conditional GET request for INSTRUCTOR role
-    if (userRole === "INSTRUCTOR") {
+    if (token) {
+      fetchUserProfile();
+    }
+  }, [token]);
+
+  // Fetch instructor data if applicable
+  useEffect(() => {
+    if (userRole === "INSTRUCTOR" && token) {
       fetchInstructorApplication();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userRole]);
+  }, [userRole, token]);
 
-  /**
-   * Fetch user profile data from the backend.
-   */
   const fetchUserProfile = async () => {
-    const token = localStorage.getItem("accessToken");
     try {
       const response = await fetch(`${BASE_URL}/user`, {
         headers: {
@@ -80,11 +90,7 @@ export default function ProfilePage() {
     }
   };
 
-  /**
-   * Fetch instructor application data if user is an INSTRUCTOR.
-   */
   const fetchInstructorApplication = async () => {
-    const token = localStorage.getItem("accessToken");
     if (!token) {
       console.error("Access token not found. Please log in.");
       return;
@@ -105,10 +111,7 @@ export default function ProfilePage() {
       if (response.ok) {
         const data = await response.json();
         if (data.body && data.body.length > 0) {
-          setInstructorData(data.body[0]); // Assuming only one application per user
-          console.log("Instructor Application Response:", data);
-        } else {
-          console.log("No instructor application found.");
+          setInstructorData(data.body[0]);
         }
       } else {
         const errorData = await response.json();
@@ -147,7 +150,9 @@ export default function ProfilePage() {
       // If a new profile image is selected, upload it to S3
       if (selectedProfileImage) {
         const userId = localStorage.getItem("id");
-        const fileName = `${userId}-profile-${Date.now()}-${selectedProfileImage.name}`;
+        const fileName = `${userId}-profile-${Date.now()}-${
+          selectedProfileImage.name
+        }`;
 
         imageUrl = await uploadFileToS3(selectedProfileImage, fileName); // Upload to S3
       }
@@ -242,13 +247,25 @@ export default function ProfilePage() {
     hiddenFileInput.current.click();
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white">
       {/* Fixed Sidebar */}
       <Sidebar className="fixed top-0 left-0 h-full w-64 z-50" />
 
       {/* Toast Notifications */}
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+      />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center p-4 ml-64">
@@ -256,7 +273,9 @@ export default function ProfilePage() {
           {/* Profile Image */}
           <div className="flex justify-center mb-4">
             <img
-              src={profileData.profileImageUrl || "https://via.placeholder.com/150"}
+              src={
+                profileData.profileImageUrl || "https://via.placeholder.com/150"
+              }
               alt="Profile"
               className="w-24 h-24 rounded-full shadow-md object-cover"
             />
@@ -285,7 +304,10 @@ export default function ProfilePage() {
           {/* Profile Info Grid */}
           <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
             <div>
-              <label htmlFor="name" className="block font-semibold text-gray-700">
+              <label
+                htmlFor="name"
+                className="block font-semibold text-gray-700"
+              >
                 Name
               </label>
               <Input
@@ -298,7 +320,10 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label htmlFor="role" className="block font-semibold text-gray-700">
+              <label
+                htmlFor="role"
+                className="block font-semibold text-gray-700"
+              >
                 Role
               </label>
               <Input
@@ -311,7 +336,10 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label htmlFor="birthdate" className="block font-semibold text-gray-700">
+              <label
+                htmlFor="birthdate"
+                className="block font-semibold text-gray-700"
+              >
                 Birthdate
               </label>
               <Input
@@ -324,7 +352,10 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block font-semibold text-gray-700">
+              <label
+                htmlFor="email"
+                className="block font-semibold text-gray-700"
+              >
                 Email
               </label>
               <Input
@@ -339,7 +370,10 @@ export default function ProfilePage() {
 
           {/* Title Field */}
           <div className="mb-4">
-            <label htmlFor="title" className="block text-sm font-semibold text-gray-700">
+            <label
+              htmlFor="title"
+              className="block text-sm font-semibold text-gray-700"
+            >
               Title
             </label>
             <Input
@@ -354,7 +388,10 @@ export default function ProfilePage() {
 
           {/* Bio Field */}
           <div className="mb-4">
-            <label htmlFor="bio" className="block text-sm font-semibold text-gray-700">
+            <label
+              htmlFor="bio"
+              className="block text-sm font-semibold text-gray-700"
+            >
               Bio
             </label>
             <Textarea
@@ -389,7 +426,11 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <p className="font-semibold">Experience Years:</p>
-                  <p>{instructorData.experienceYears !== null ? instructorData.experienceYears : "N/A"}</p>
+                  <p>
+                    {instructorData.experienceYears !== null
+                      ? instructorData.experienceYears
+                      : "N/A"}
+                  </p>
                 </div>
                 <div>
                   <p className="font-semibold">Resume:</p>
@@ -429,7 +470,10 @@ export default function ProfilePage() {
           {/* Edit/Save Buttons */}
           {editing ? (
             <div className="flex space-x-4 mt-6 w-full">
-              <Button onClick={() => setEditing(false)} className="bg-gray-500 hover:bg-gray-600 text-white w-full">
+              <Button
+                onClick={() => setEditing(false)}
+                className="bg-gray-500 hover:bg-gray-600 text-white w-full"
+              >
                 Cancel
               </Button>
               <Button
@@ -441,7 +485,10 @@ export default function ProfilePage() {
               </Button>
             </div>
           ) : (
-            <Button onClick={() => setEditing(true)} className="bg-blue-500 hover:bg-blue-600 text-white w-full mt-6">
+            <Button
+              onClick={() => setEditing(true)}
+              className="bg-blue-500 hover:bg-blue-600 text-white w-full mt-6"
+            >
               Edit Profile
             </Button>
           )}
@@ -464,7 +511,12 @@ export default function ProfilePage() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
@@ -484,7 +536,11 @@ export default function ProfilePage() {
                     onClick={() => setShowOldPassword(!showOldPassword)}
                     className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                   >
-                    {showOldPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                    {showOldPassword ? (
+                      <EyeSlashIcon className="w-5 h-5" />
+                    ) : (
+                      <EyeIcon className="w-5 h-5" />
+                    )}
                   </span>
                 </div>
 
@@ -501,7 +557,11 @@ export default function ProfilePage() {
                     onClick={() => setShowNewPassword(!showNewPassword)}
                     className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                   >
-                    {showNewPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                    {showNewPassword ? (
+                      <EyeSlashIcon className="w-5 h-5" />
+                    ) : (
+                      <EyeIcon className="w-5 h-5" />
+                    )}
                   </span>
                 </div>
 
@@ -518,11 +578,18 @@ export default function ProfilePage() {
                     onClick={() => setShowRetypePassword(!showRetypePassword)}
                     className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                   >
-                    {showRetypePassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                    {showRetypePassword ? (
+                      <EyeSlashIcon className="w-5 h-5" />
+                    ) : (
+                      <EyeIcon className="w-5 h-5" />
+                    )}
                   </span>
                 </div>
 
-                <Button onClick={handleChangePassword} className="bg-red-500 hover:bg-red-600 text-white w-full">
+                <Button
+                  onClick={handleChangePassword}
+                  className="bg-red-500 hover:bg-red-600 text-white w-full"
+                >
                   Change Password
                 </Button>
               </div>
