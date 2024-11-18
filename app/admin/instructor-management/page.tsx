@@ -21,7 +21,8 @@ export default function ApproveInstructorApplication() {
   const [applications, setApplications] = useState([]);
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [filterStatus, setFilterStatus] = useState('ALL');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [actionType, setActionType] = useState("");
   const [message, setMessage] = useState("");
@@ -76,16 +77,17 @@ export default function ApproveInstructorApplication() {
   }, [BASE_URL]);
 
   // Handle approve/reject action click
-  const handleActionClick = (id, action) => {
-    setSelectedApplicationId(id);
+  const handleActionClick = (application, action) => {
+    setSelectedApplication(application);
     setActionType(action);
-    setIsModalOpen(true);
+    setIsActionModalOpen(true);
+    setMessage(""); // Reset message
   };
 
   // Open the modal with the selected application details
   const handleTileClick = (application) => {
     setSelectedApplication(application);
-    setIsModalOpen(true);
+    setIsDetailsModalOpen(true);
   };
 
   // Submit the approve/reject action to the API
@@ -103,7 +105,7 @@ export default function ApproveInstructorApplication() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          instructorApplicationId: selectedApplicationId,
+          instructorApplicationId: selectedApplication.id,
           message
         }),
       });
@@ -111,22 +113,29 @@ export default function ApproveInstructorApplication() {
       const result = await response.json();
       if (response.ok) {
         toast.success(`Instructor application ${actionType}d successfully!`);
+        setIsActionModalOpen(false);
+        setSelectedApplication(null);
+        setMessage("");
+        fetchApplications();
       } else {
         toast.error(`Error: ${result.message || 'Something went wrong'}`);
       }
     } catch (error) {
       toast.error('Failed to connect to the API');
-    } finally {
-      setIsModalOpen(false);
-      setMessage("");
-      fetchApplications();
     }
   };
 
-  // Close the modal and reset message and selected application
-  const handleCancel = () => {
-    setIsModalOpen(false);
+  // Close the action modal and reset message and selected application
+  const handleActionCancel = () => {
+    setIsActionModalOpen(false);
     setMessage("");
+    setSelectedApplication(null);
+    setActionType("");
+  };
+
+  // Close the details modal
+  const handleDetailsClose = () => {
+    setIsDetailsModalOpen(false);
     setSelectedApplication(null);
   };
 
@@ -197,8 +206,8 @@ export default function ApproveInstructorApplication() {
                       <button
                         className="px-4 py-2 font-semibold text-white bg-green-500 hover:bg-green-600 rounded-full shadow-lg transition transform duration-300 hover:scale-105"
                         onClick={(e) => {
-                          e.stopPropagation();
-                          handleActionClick(application.id, "approve");
+                          e.stopPropagation(); // Prevent triggering the tile click
+                          handleActionClick(application, "approve");
                         }}
                       >
                         Approve
@@ -206,8 +215,8 @@ export default function ApproveInstructorApplication() {
                       <button
                         className="px-4 py-2 font-semibold text-white bg-red-500 hover:bg-red-600 rounded-full shadow-lg transition transform duration-300 hover:scale-105"
                         onClick={(e) => {
-                          e.stopPropagation();
-                          handleActionClick(application.id, "reject");
+                          e.stopPropagation(); // Prevent triggering the tile click
+                          handleActionClick(application, "reject");
                         }}
                       >
                         Reject
@@ -223,7 +232,7 @@ export default function ApproveInstructorApplication() {
         )}
 
         {/* Modal for Application Details */}
-        {isModalOpen && selectedApplication && (
+        {isDetailsModalOpen && selectedApplication && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto text-black">
               <h3 className="text-2xl font-semibold mb-4">Instructor Application Details</h3>
@@ -259,9 +268,44 @@ export default function ApproveInstructorApplication() {
               <div className="flex justify-end mt-6">
                 <button
                   className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300"
-                  onClick={handleCancel}
+                  onClick={handleDetailsClose}
                 >
                   Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal for Approve/Reject Action */}
+        {isActionModalOpen && selectedApplication && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md text-black">
+              <h3 className="text-xl font-semibold mb-4">
+                {actionType === "approve" ? "Approve" : "Reject"} Application
+              </h3>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="w-full border border-gray-300 rounded-md p-2 mb-4 resize-none"
+                rows="4"
+                placeholder={`Enter reason to ${actionType} the application`}
+              ></textarea>
+              <div className="flex justify-end space-x-2">
+                <button
+                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 transition duration-300"
+                  onClick={handleActionCancel}
+                >
+                  Cancel
+                </button>
+                <button
+                  className={`px-4 py-2 text-white rounded-md transition duration-300 ${
+                    actionType === "approve" ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'
+                  }`}
+                  onClick={handleSubmit}
+                  disabled={!message.trim()} // Disable if message is empty
+                >
+                  {actionType === "approve" ? "Approve" : "Reject"}
                 </button>
               </div>
             </div>
