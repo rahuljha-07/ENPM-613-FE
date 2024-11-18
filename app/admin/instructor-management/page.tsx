@@ -1,9 +1,20 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
+import AWS from 'aws-sdk';
 import Sidebar from '../../components/Sidebar';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+const DEFAULT_PROFILE_IMAGE = "https://static.vecteezy.com/system/resources/thumbnails/020/765/399/small/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg";
+const BUCKET_NAME = 'ilim-assets';
+
+const s3 = new AWS.S3({
+  accessKeyId: 'YOUR_ACCESS_KEY_ID',
+  secretAccessKey: 'YOUR_SECRET_ACCESS_KEY',
+  region: 'us-east-2',
+  signatureVersion: 'v4',
+});
 
 export default function ApproveInstructorApplication() {
   const BASE_URL = process.env.NEXT_PUBLIC_ILIM_BE;
@@ -11,17 +22,18 @@ export default function ApproveInstructorApplication() {
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedApplicationId, setSelectedApplicationId] = useState(null);
-  const [actionType, setActionType] = useState(""); // "approve" or "reject"
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [actionType, setActionType] = useState("");
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
 
+  // Fetch applications on component mount
   useEffect(() => {
     fetchApplications();
   }, []);
 
+  // Filter applications based on selected status
   useEffect(() => {
-    // Filter applications based on status only
     const filtered = applications.filter(application => {
       const matchesStatus = filterStatus === 'ALL' || application.status === filterStatus;
       return matchesStatus;
@@ -29,19 +41,20 @@ export default function ApproveInstructorApplication() {
     setFilteredApplications(filtered);
   }, [filterStatus, applications]);
 
+  // Get access token from local storage
   const getAccessToken = () => localStorage.getItem('accessToken');
 
+  // Fetch applications from the API
   const fetchApplications = useCallback(async () => {
     const token = getAccessToken();
     if (!BASE_URL || !token) {
-      console.error("BASE_URL or token is not defined");
       toast.error("Failed to load applications. Please check your credentials.");
       return;
     }
 
     try {
-      setLoading(true); // Start loading
-      const response = await fetch(`${BASE_URL}/student/instructor-application/all`, {
+      setLoading(true);
+      const response = await fetch(`${BASE_URL}/admin/instructor-application/all`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -52,24 +65,30 @@ export default function ApproveInstructorApplication() {
       if (response.ok) {
         setApplications(result.body);
         setFilteredApplications(result.body);
-        // Removed the success toast to prevent multiple toasts
       } else {
         toast.error(`Error: ${result.message || 'Failed to load applications'}`);
       }
     } catch (error) {
       toast.error('Failed to connect to the API');
-      console.error(error);
     } finally {
-      setLoading(false); // End loading
+      setLoading(false);
     }
   }, [BASE_URL]);
 
+  // Handle approve/reject action click
   const handleActionClick = (id, action) => {
     setSelectedApplicationId(id);
     setActionType(action);
     setIsModalOpen(true);
   };
 
+  // Open the modal with the selected application details
+  const handleTileClick = (application) => {
+    setSelectedApplication(application);
+    setIsModalOpen(true);
+  };
+
+  // Submit the approve/reject action to the API
   const handleSubmit = async () => {
     const token = getAccessToken();
     const endpoint = actionType === "approve"
@@ -97,202 +116,158 @@ export default function ApproveInstructorApplication() {
       }
     } catch (error) {
       toast.error('Failed to connect to the API');
-      console.error(error);
     } finally {
-      // Close modal, clear message, and refresh list even if the API call fails
       setIsModalOpen(false);
       setMessage("");
       fetchApplications();
     }
   };
 
+  // Close the modal and reset message and selected application
   const handleCancel = () => {
     setIsModalOpen(false);
-    setMessage(""); // Clear the message field on cancel
+    setMessage("");
+    setSelectedApplication(null);
   };
 
-  // Mapping of application status to display text
+  // Map status codes to display text
   const statusDisplayText = {
     'PENDING': 'Pending',
     'APPROVED': 'Approved',
     'REJECTED': 'Rejected',
-    // Add other statuses if any
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+    <div className="flex h-screen">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
 
       {/* Sidebar */}
-      <aside className="fixed top-0 left-0 h-screen w-64 bg-gray-800 z-10">
+      <div className="fixed h-full">
         <Sidebar />
-      </aside>
+      </div>
 
       {/* Main Content */}
-      <main className="flex-1 ml-64 p-8">
-        {/* Enlarged Title */}
-        <h2 className="text-4xl font-bold mb-6 text-white">Instructor Applications</h2>
+      <div className="flex-1 p-6 pl-20 lg:pl-56 ml-16 overflow-y-auto bg-white">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">Instructor Applications</h2>
 
-        {/* Tabs for Filtering */}
+        {/* Filter Buttons */}
         <div className="flex space-x-4 mb-6">
-          <button
-            onClick={() => setFilterStatus('PENDING')}
-            className={`px-6 py-3 rounded-md font-semibold ${
-              filterStatus === 'PENDING'
-                ? 'bg-red-600 text-white'
-                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-            } transition duration-300`}
-          >
-            Pending
-          </button>
-          <button
-            onClick={() => setFilterStatus('APPROVED')}
-            className={`px-6 py-3 rounded-md font-semibold ${
-              filterStatus === 'APPROVED'
-                ? 'bg-red-600 text-white'
-                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-            } transition duration-300`}
-          >
-            Approved
-          </button>
-          <button
-            onClick={() => setFilterStatus('REJECTED')}
-            className={`px-6 py-3 rounded-md font-semibold ${
-              filterStatus === 'REJECTED'
-                ? 'bg-red-600 text-white'
-                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-            } transition duration-300`}
-          >
-            Rejected
-          </button>
-          <button
-            onClick={() => setFilterStatus('ALL')}
-            className={`px-6 py-3 rounded-md font-semibold ${
-              filterStatus === 'ALL'
-                ? 'bg-red-600 text-white'
-                : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-            } transition duration-300`}
-          >
-            All
-          </button>
+          {['PENDING', 'APPROVED', 'REJECTED', 'ALL'].map((status) => (
+            <button
+              key={status}
+              onClick={() => setFilterStatus(status)}
+              className={`px-6 py-2 font-semibold rounded-lg shadow-md transition duration-300 ${
+                filterStatus === status
+                  ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
+                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+              }`}
+            >
+              {statusDisplayText[status] || status}
+            </button>
+          ))}
         </div>
 
-        {/* Loader */}
+        {/* Loading Spinner */}
         {loading ? (
           <div className="flex items-center justify-center w-full h-64">
-            <div className="loader border-t-4 border-white rounded-full w-16 h-16 animate-spin"></div>
+            <div className="loader border-t-4 border-blue-500 rounded-full w-12 h-12 animate-spin"></div>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {filteredApplications.length > 0 ? (
               filteredApplications.map((application) => (
                 <div
                   key={application.id}
-                  className="flex flex-col md:flex-row items-center justify-between border border-gray-300 p-6 rounded-lg shadow-sm bg-white text-gray-800"
+                  onClick={() => handleTileClick(application)}
+                  className="flex items-center justify-between border border-gray-300 p-4 rounded-lg shadow-sm bg-white text-gray-800 cursor-pointer"
                 >
-                  {/* Clickable Profile Section */}
-                  <div
-                    className="flex items-center space-x-4 cursor-pointer hover:underline"
-                    onClick={() => window.location.href = `/admin/instructor-application/${application.id}`}
-                  >
-                    {/* Profile Image */}
+                  {/* Name Display */}
+                  <div className="flex items-center space-x-4">
                     <img
-                      src={application.profileImageUrl || "/default-avatar.png"}
-                      alt={`${application.userId}'s profile`}
+                      src={application.profileImageUrl || DEFAULT_PROFILE_IMAGE}
+                      alt="Profile"
                       className="w-16 h-16 rounded-full border object-cover"
                     />
+                    <p className="text-lg font-semibold">{application.instructorTitle}</p>
+                  </div>
 
-                    {/* Name and Title */}
-                    <div>
-                      <p className="text-xl font-semibold">{application.instructorTitle}</p>
-                      <p className="text-sm text-gray-600">{application.professionalTitle}</p>
+                  {/* Approve and Reject Buttons */}
+                  {application.status === 'PENDING' && (
+                    <div className="flex space-x-2">
+                      <button
+                        className="px-4 py-2 font-semibold text-white bg-green-500 hover:bg-green-600 rounded-full shadow-lg transition transform duration-300 hover:scale-105"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleActionClick(application.id, "approve");
+                        }}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        className="px-4 py-2 font-semibold text-white bg-red-500 hover:bg-red-600 rounded-full shadow-lg transition transform duration-300 hover:scale-105"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleActionClick(application.id, "reject");
+                        }}
+                      >
+                        Reject
+                      </button>
                     </div>
-                  </div>
-
-                  {/* Status Badge */}
-                  <span
-                    className={`font-semibold text-sm px-3 py-1 rounded-full ${
-                      application.status === "PENDING"
-                        ? "bg-yellow-200 text-yellow-800"
-                        : application.status === "APPROVED"
-                        ? "bg-green-200 text-green-800"
-                        : application.status === "REJECTED"
-                        ? "bg-red-200 text-red-800"
-                        : "bg-gray-200 text-gray-800"
-                    }`}
-                  >
-                    {statusDisplayText[application.status] || application.status}
-                  </span>
-
-                  {/* Additional Information */}
-                  <div className="space-y-2 mt-4 md:mt-0">
-                    <p><strong>School:</strong> {application.schoolName}</p>
-                    <p><strong>Degree:</strong> {application.degreeTitle}</p>
-                    <p><strong>Experience:</strong> {application.experienceYears} years</p>
-                    <p><strong>Bio:</strong> {application.instructorBio}</p>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex space-x-4 mt-4 md:mt-0">
-                    {application.status === 'PENDING' && (
-                      <>
-                        <button
-                          className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300 shadow-lg transform hover:scale-105"
-                          onClick={() => handleActionClick(application.id, "approve")}
-                        >
-                          Approve
-                        </button>
-                        <button
-                          className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-300 shadow-lg transform hover:scale-105"
-                          onClick={() => handleActionClick(application.id, "reject")}
-                        >
-                          Reject
-                        </button>
-                      </>
-                    )}
-                  </div>
+                  )}
                 </div>
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center mt-20">
-                <p className="text-2xl font-semibold text-gray-300">No instructor applications available.</p>
-              </div>
+              <p className="text-center text-gray-500">No instructor applications available.</p>
             )}
           </div>
         )}
 
-        {/* Modal */}
-        {isModalOpen && (
+        {/* Modal for Application Details */}
+        {isModalOpen && selectedApplication && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-              <h3 className="text-xl font-semibold mb-4 text-gray-800">
-                {actionType === "approve" ? "Approve" : "Reject"} Application
-              </h3>
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Enter a message..."
-                className="w-full border border-gray-300 p-2 rounded-lg mb-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows={4}
-              ></textarea>
-              <div className="flex justify-end space-x-4">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] overflow-y-auto text-black">
+              <h3 className="text-2xl font-semibold mb-4">Instructor Application Details</h3>
+              <img
+                src={selectedApplication.profileImageUrl || DEFAULT_PROFILE_IMAGE}
+                alt="Profile"
+                className="w-24 h-24 rounded-full mx-auto mb-4 shadow-md"
+              />
+              <p><strong>Name:</strong> {selectedApplication.instructorTitle}</p>
+              <p><strong>Professional Title:</strong> {selectedApplication.professionalTitle}</p>
+              <p><strong>School:</strong> {selectedApplication.schoolName}</p>
+              <p><strong>Degree:</strong> {selectedApplication.degreeTitle}</p>
+              <p><strong>Graduation Date:</strong> {selectedApplication.graduateDate}</p>
+              <p><strong>Experience:</strong> {selectedApplication.experienceYears} years</p>
+              <p><strong>Teaching Experience:</strong> {selectedApplication.teachingExperience}</p>
+              <p><strong>Bio:</strong> {selectedApplication.instructorBio}</p>
+              <p>
+                <strong>Resume:</strong>{' '}
+                {selectedApplication.resumeUrl ? (
+                  <a
+                    href={selectedApplication.resumeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 underline"
+                  >
+                    Download Resume
+                  </a>
+                ) : (
+                  <span>No resume available</span>
+                )}
+              </p>
+
+              <div className="flex justify-end mt-6">
                 <button
-                  className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400 transition duration-300"
+                  className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300"
                   onClick={handleCancel}
                 >
-                  Cancel
-                </button>
-                <button
-                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300"
-                  onClick={handleSubmit}
-                >
-                  Submit
+                  Close
                 </button>
               </div>
             </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

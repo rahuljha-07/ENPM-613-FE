@@ -115,6 +115,7 @@ export default function PurchasedCoursesPage() {
             {purchasedCourses.map((course) => (
               <div
                 key={course.id}
+                onClick={() => handleContinueClick(course.id)}
                 className="flex items-center justify-between bg-white text-gray-800 p-4 rounded-lg shadow hover:shadow-md transition-shadow duration-300 cursor-pointer"
               >
                 {/* Thumbnail */}
@@ -137,7 +138,10 @@ export default function PurchasedCoursesPage() {
 
                 {/* Continue Button */}
                 <Button
-                  onClick={() => handleContinueClick(course.id)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent triggering the tile's onClick event
+                    handleContinueClick(course.id);
+                  }}
                   className="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 transition duration-200"
                 >
                   Continue

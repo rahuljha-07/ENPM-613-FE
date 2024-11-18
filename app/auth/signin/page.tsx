@@ -38,19 +38,11 @@ export default function SignIn() {
       if (response.ok) {
         const userData = await response.json();
   
-        // Extract birthdate and format it to "mm-dd-yyyy"
-        const birthdateArray = userData.body.birthdate; // Expected format: [yyyy, mm, dd]
-        let formattedBirthdate = '';
-        if (birthdateArray && birthdateArray.length === 3) {
-          const [year, month, day] = birthdateArray;
-          formattedBirthdate = `${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}-${year}`;
-        }
-  
         // Store user data in local storage
         localStorage.setItem('id', userData.body.id);
         localStorage.setItem('name', userData.body.name);
         localStorage.setItem('email', userData.body.email);
-        localStorage.setItem('birthdate', formattedBirthdate); // Store formatted birthdate
+        localStorage.setItem('birthdate', userData.body.birthdate); 
         localStorage.setItem('role', userData.body.role);
       } else {
         console.error("Failed to fetch user role:", response.statusText);

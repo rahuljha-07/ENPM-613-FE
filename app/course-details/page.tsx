@@ -11,21 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const PUBLISHED_COURSES = `${process.env.NEXT_PUBLIC_ILIM_BE}/course/published`;
 const DEFAULT_THUMBNAIL_URL = "https://as1.ftcdn.net/v2/jpg/05/79/68/24/1000_F_579682479_j4jRfx0nl3C8vMrTYVapFnGP8EgNHgfk.jpg";
 
-const dummyCourses = [
-  {
-    id: '1',
-    title: 'Introduction to Python',
-    description: 'Learn the basics of Python programming. This description is intentionally long to test the expandability of the tile layout and ensure that text wraps correctly within the content box.',
-    instructor: 'Jane Doe',
-    rating: '4.5',
-    price: '49.99',
-    modules: ['Variables', 'Loops', 'Functions'],
-    thumbnailUrl: '',
-    status: 'Published',
-  },
-];
-
-export default function CourseDetailsPage() {
+export default function CoursesPage() {
   const router = useRouter();
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,9 +31,6 @@ export default function CourseDetailsPage() {
       }
     } catch (error) {
       console.error("Error fetching courses:", error);
-      toast.error("Failed to load courses from API. Using dummy data.");
-      setCourses(dummyCourses);
-      setFilteredCourses(dummyCourses);
     } finally {
       setLoading(false);
     }
@@ -65,23 +48,15 @@ export default function CourseDetailsPage() {
     );
   }, [searchTerm, courses]);
 
-  const handleTileClick = () => {
-    router.push("#"); // Test routing
+  const handleTileClick = (course) => {
+    const { id } = course;
+    router.push(`/course-details/course/${id}`);
   };
 
   const handleViewClick = (course) => {
-    const { id, title, description, instructor, rating, price } = course;
-    const query = new URLSearchParams({
-      id,
-      title,
-      description,
-      instructor,
-      rating,
-      price,
-    }).toString();
-    router.push(`/course-details/course/${id}?${query}`);
-
-  }
+    const { id } = course;
+    router.push(`/course-details/course/${id}`);
+  };
 
   return (
     <motion.div
@@ -139,7 +114,7 @@ export default function CourseDetailsPage() {
                     <motion.div
                       key={course.id}
                       className="flex items-center justify-between p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-300 cursor-pointer"
-                      onClick={handleTileClick}
+                      onClick={() => handleTileClick(course)}
                       style={{ minHeight: '80px' }} // Allow the tile to expand for long descriptions
                     >
                       {/* Course Thumbnail */}

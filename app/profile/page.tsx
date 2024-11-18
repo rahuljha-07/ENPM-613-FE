@@ -54,7 +54,6 @@ export default function ProfilePage() {
       if (response.ok) {
         const data = await response.json();
         setProfileData(data.body);
-        toast.success("Profile loaded successfully!");
       } else {
         throw new Error("Failed to load profile data.");
       }
@@ -64,8 +63,6 @@ export default function ProfilePage() {
     }
   };
 
-  // Remove uploadProfilePicture from immediate upload
-  // Instead, store the selected file
   const handleProfilePictureChange = (e) => {
     if (e.target.files.length > 0) {
       const file = e.target.files[0];
@@ -120,7 +117,6 @@ export default function ProfilePage() {
         setSelectedProfileImage(null); // Reset the selected image
         fetchUserProfile();
       } else {
-        // Extract error message from response if available
         const errorData = await response.json();
         const errorMessage = errorData.message || "Failed to update profile.";
         throw new Error(errorMessage);
@@ -136,7 +132,6 @@ export default function ProfilePage() {
   const handleChangePassword = async () => {
     const token = localStorage.getItem("accessToken");
 
-    // Check if new password and retype password match
     if (newPassword !== retypePassword) {
       toast.error("New password and retype password do not match.");
       return;
@@ -167,7 +162,6 @@ export default function ProfilePage() {
         setRetypePassword(""); // Clear retype password
         setIsChangePasswordOpen(false); // Close the collapsible section
       } else {
-        // Extract error message from response if available
         const errorData = await response.json();
         const errorMessage = errorData.message || "Failed to change password.";
         throw new Error(errorMessage);
@@ -186,7 +180,6 @@ export default function ProfilePage() {
     }));
   };
 
-  // Function to handle clicking the custom file input button
   const handleClick = () => {
     hiddenFileInput.current.click();
   };
@@ -200,7 +193,7 @@ export default function ProfilePage() {
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center p-4 ml-64"> {/* Added ml-64 to offset the fixed sidebar */}
+      <div className="flex-1 flex flex-col items-center p-4 ml-64">
         <div className="flex flex-col bg-white text-gray-800 rounded-lg shadow-lg p-6 w-full max-w-lg">
           
           {/* Profile Image */}
