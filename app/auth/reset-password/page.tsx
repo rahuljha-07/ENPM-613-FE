@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ToastContainer, toast } from 'react-toastify';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 import 'react-toastify/dist/ReactToastify.css';
+import React from 'react';
 
 const RESET_PASSWORD_URL = `${process.env.NEXT_PUBLIC_ILIM_BE}/auth/reset-password`;
 

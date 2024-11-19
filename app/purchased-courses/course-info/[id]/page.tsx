@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Sidebar from '../../../components/Sidebar';
 import { ChevronDownIcon, ChevronRightIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import ReactPlayer from 'react-player';
+import React from "react";
 
 export default function CourseInfoPage() {
   const searchParams = useSearchParams();

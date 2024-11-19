@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Sidebar from '../../../components/Sidebar';
 import { XMarkIcon } from '@heroicons/react/24/solid';
+import React from 'react';
 
 export default function CourseDetailsPage() {
   const router = useRouter();
