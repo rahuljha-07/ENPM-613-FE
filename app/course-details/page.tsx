@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'react-toastify';
 import { EyeIcon } from '@heroicons/react/24/solid';
 import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
 
 const PUBLISHED_COURSES = `${process.env.NEXT_PUBLIC_ILIM_BE}/course/published`;
 const DEFAULT_THUMBNAIL_URL = "https://as1.ftcdn.net/v2/jpg/05/79/68/24/1000_F_579682479_j4jRfx0nl3C8vMrTYVapFnGP8EgNHgfk.jpg";

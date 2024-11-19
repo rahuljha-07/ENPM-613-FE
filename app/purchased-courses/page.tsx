@@ -6,6 +6,7 @@ import Sidebar from '../components/Sidebar';
 import { Button } from '@/components/ui/button';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import React from "react";
 
 export default function PurchasedCoursesPage() {
   const router = useRouter();
