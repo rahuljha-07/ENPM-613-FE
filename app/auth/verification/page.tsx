@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Sidebar from '../../components/Sidebar';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import React from 'react';
+import React, { Suspense } from 'react';
 const VERIFY_ACCOUNT_URL = `${process.env.NEXT_PUBLIC_ILIM_BE}/auth/verify-account`;
 
 function VerificationContent() {
