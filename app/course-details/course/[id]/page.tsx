@@ -13,6 +13,7 @@ export default function CourseDetailsPage() {
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [attempts, setAttempts] = useState(0);
   const [purchasedCourseIds, setPurchasedCourseIds] = useState([]);
+  const [purchaseStatus, setPurchaseStatus] = useState(null); // New state variable
   const BASE_URL = process.env.NEXT_PUBLIC_ILIM_BE;
 
   const courseId = params.id;
@@ -83,6 +84,34 @@ export default function CourseDetailsPage() {
   };
 
   /**
+   * Fetch purchase status of the course.
+   */
+  const fetchPurchaseStatus = async () => {
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        throw new Error('Access token not found. Please log in.');
+      }
+
+      const response = await fetch(`${BASE_URL}/student/course/${courseId}/check-purchase`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPurchaseStatus(data.body); // Possible values: null, SUCCEEDED, PENDING, FAILED
+      } else {
+        throw new Error('Failed to fetch purchase status.');
+      }
+    } catch (error) {
+      console.error('Error fetching purchase status:', error);
+    }
+  };
+
+  /**
    * Handle payment process initiation.
    */
   const handlePayment = async () => {
@@ -149,6 +178,7 @@ export default function CourseDetailsPage() {
 
         if (response.ok) {
           const data = await response.json();
+          setPurchaseStatus(data.body); // Update purchase status
           if (data.body === 'SUCCEEDED') {
             clearInterval(interval);
             setPaymentLoading(false);
@@ -168,23 +198,29 @@ export default function CourseDetailsPage() {
   };
 
   /**
-   * Handle redirection to the Course Info page.
-   * Removed as per user request.
-   */
-
-  /**
    * Fetch course details and purchased courses upon component mount.
    */
   useEffect(() => {
     if (courseId) {
       fetchCourseDetails();
       fetchPurchasedCourseIds();
+      fetchPurchaseStatus(); // Fetch purchase status
     } else {
       console.error('courseId is missing in route parameters.');
       alert('Course ID is missing. Redirecting to courses page.');
       router.push('/purchased-courses');
     }
   }, [courseId]);
+
+  /**
+   * Redirect if purchase status is SUCCEEDED.
+   */
+  useEffect(() => {
+    if (purchaseStatus === 'SUCCEEDED') {
+      alert('Purchase successful! Redirecting to your courses.');
+      router.push('/purchased-courses');
+    }
+  }, [purchaseStatus]);
 
   /**
    * Determine if the current user has purchased the course.
@@ -241,7 +277,7 @@ export default function CourseDetailsPage() {
           </button>
 
           {/* Conditional Rendering of Buy Button */}
-          {userRole !== 'ADMIN' && !isCoursePurchased && (
+          {userRole !== 'ADMIN' && purchaseStatus === null && (
             <button
               onClick={handlePayment}
               disabled={paymentLoading}
@@ -251,6 +287,13 @@ export default function CourseDetailsPage() {
             >
               {paymentLoading ? 'Processing...' : 'Buy Course'}
             </button>
+          )}
+
+          {/* Display Purchase Status if PENDING or FAILED */}
+          {userRole !== 'ADMIN' && (purchaseStatus === 'PENDING' || purchaseStatus === 'FAILED') && (
+            <p className="text-yellow-500 font-semibold">
+              Purchase status: {purchaseStatus}
+            </p>
           )}
         </div>
 
@@ -289,10 +332,7 @@ export default function CourseDetailsPage() {
           <div className="space-y-4">
             {(() => {
               // Determine the modules based on user role
-              const modules =
-                userRole === 'ADMIN' || userRole === 'INSTRUCTOR'
-                  ? course?.courseModules
-                  : course?.modules;
+              const modules = course?.courseModules || course?.modules || [];
 
               // Check if modules exist and have at least one item
               if (Array.isArray(modules) && modules.length > 0) {
