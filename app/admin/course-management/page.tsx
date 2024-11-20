@@ -13,6 +13,7 @@ export default function CourseManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [confirmationModal, setConfirmationModal] = useState(null); // Modal state
+  const [rejectionReason, setRejectionReason] = useState(""); // Added state for rejection reason
 
   const router = useRouter();
 
@@ -135,7 +136,8 @@ export default function CourseManagement() {
     }
   };
 
-  const handleRejectCourse = async (courseId) => {
+  // Modified function signature to accept 'reason'
+  const handleRejectCourse = async (courseId, reason) => {
     const token = getAccessToken();
     const endpoint = `${BASE_URL}/admin/reject-course/${courseId}`;
 
@@ -146,6 +148,7 @@ export default function CourseManagement() {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ reason }), // Send the reason to the backend
       });
 
       if (response.ok) {
@@ -160,6 +163,7 @@ export default function CourseManagement() {
       console.error(error);
     } finally {
       setConfirmationModal(null); // Close the modal
+      setRejectionReason(""); // Reset rejection reason
     }
   };
 
@@ -167,13 +171,14 @@ export default function CourseManagement() {
     setConfirmationModal({ action, courseId });
   };
 
+  // Modified to pass 'rejectionReason' when rejecting
   const handleConfirmAction = () => {
     if (confirmationModal.action === 'delete') {
       handleDeleteCourse(confirmationModal.courseId);
     } else if (confirmationModal.action === 'approve') {
       handleApproveCourse(confirmationModal.courseId);
     } else if (confirmationModal.action === 'reject') {
-      handleRejectCourse(confirmationModal.courseId);
+      handleRejectCourse(confirmationModal.courseId, rejectionReason);
     }
   };
 
@@ -308,10 +313,22 @@ export default function CourseManagement() {
             <p className="text-lg font-semibold mb-4">
               Are you sure you want to {confirmationModal.action} this course?
             </p>
+            {/* Added textarea for rejection reason when rejecting */}
+            {confirmationModal.action === 'reject' && (
+              <textarea
+                placeholder="Enter rejection reason"
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
+              ></textarea>
+            )}
             <div className="flex justify-end space-x-4">
               <button
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-                onClick={() => setConfirmationModal(null)}
+                onClick={() => {
+                  setConfirmationModal(null);
+                  setRejectionReason(""); // Reset rejection reason
+                }}
               >
                 Cancel
               </button>
